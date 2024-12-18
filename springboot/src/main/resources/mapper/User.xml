@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="usc.emrsytem.springboot.mapper.UserMapper">
+    <!-- ==========================编写sql区======================  -->
+    <!--==========查询=========-->
+    <!--查询所有用户-->
+    <resultMap id="userResultMap" type="usc.emrsytem.springboot.entity.User">
+        <!-- 取别名、映射类型 -->
+        <!--
+            column: 列名
+            property: 属性类名
+        -->
+        <id column="user_id" property="userId" /> <!-- id主键映射 -->
+        <result column="created_at" property="createdAt" /> <!-- 其他用result -->
+        <result column="phone_number" property="phoneNumber" />
+    </resultMap>
+    <!--查询所有用户-->
+    <select id="selectAllUsers" resultMap="userResultMap">
+        select * from user
+    </select>
+    <!--根据条件查询用户-->
+    <select id="listByCondition" resultMap="userResultMap">
+        select * from user
+        <where>
+            <if test="username != null and username != ''">
+                username like concat('%', #{ username }, '%')
+            </if>
+            <if test="phoneNumber != null and phoneNumber !=''">
+                and phone_number like concat('%', #{ phoneNumber }, '%')
+            </if>
+            <if test="role != null and role != ''">
+                and role = #{ role }
+            </if>
+            <if test="email != null and email != ''">
+                and email like concat('%', #{ email }, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectById" resultType="usc.emrsytem.springboot.entity.User">
+        select * from user where user_id = #{id}
+    </select>
+
+    <resultMap id="patientResultMap" type="usc.emrsytem.springboot.entity.Patient">
+        <!--patient表字段映射-->
+        <id column="patient_id" property="patientId" />
+        <result column="user_id" property="userId" />
+        <result column="gender" property="gender" />
+        <result column="address" property="address" />
+        <result column="allergies" property="allergies" />
+        <result column="date_of_birth" property="dateOfBirth" />
+        <result column="emergency_contact" property="emergencyContact" />
+        <result column="contact_phone" property="contactPhone" />
+        <result column="medical_history" property="medicalHistory" />
+        <result column="updatedAt" property="updatedAt" />
+        <!--嵌套映射到User对象-->
+        <association property="user" javaType="usc.emrsytem.springboot.entity.User">
+            <id column="user_id" property="userId" />
+            <result column="username" property="username" />
+            <result column="password" property="password" />
+            <result column="role" property="role" />
+            <result column="email" property="email" />
+            <result column="created_at" property="createdAt" />
+            <result column="lastLoginAt" property="lastLoginAt" />
+            <result column="phone_number" property="phoneNumber" />
+        </association>
+    </resultMap>
+    <select id="listPatientUsers" resultMap="patientResultMap">
+        select p.*, u.* from patient p inner join user u on p.user_id = u.user_id where u.role = 'patient'
+    </select>
+    <resultMap id="doctorResultMap" type="usc.emrsytem.springboot.entity.Doctor">
+        <!--doctor表字段映射-->
+        <id column="doctor_id" property="doctorId" />
+        <result column="user_id" property="userId" />
+        <result column="gender" property="gender" />
+        <result column="department" property="department" />
+        <result column="specialty" property="specialty" />
+        <result column="qualification" property="qualification" />
+        <result column="experience_years" property="experienceYears" />
+        <result column="updated_at" property="updatedAt" />
+        <!--嵌套映射到User对象-->
+        <association property="user" javaType="usc.emrsytem.springboot.entity.User">
+            <id column="user_id" property="userId" />
+            <result column="username" property="username" />
+            <result column="password" property="password" />
+            <result column="role" property="role" />
+            <result column="email" property="email" />
+            <result column="created_at" property="createdAt" />
+            <result column="lastLoginAt" property="lastLoginAt" />
+            <result column="phone_number" property="phoneNumber" />
+        </association>
+    </resultMap>
+    <select id="listDoctorUsers" resultMap="doctorResultMap">
+        select d.*, u.* from doctor d inner join user u on d.user_id = u.user_id where u.role = 'doctor'
+    </select>
+    <resultMap id="adminResultMap" type="usc.emrsytem.springboot.entity.Admin">
+        <!--admin表字段映射-->
+        <id column="admin_id" property="adminId" />
+        <result column="user_id" property="userId" />
+        <result column="admin_level" property="adminLevel" />
+        <result column="department" property="department" />
+        <result column="updated_at" property="updatedAt" />
+        <!--嵌套映射到User对象-->
+        <association property="user" javaType="usc.emrsytem.springboot.entity.User">
+            <id column="user_id" property="userId" />
+            <result column="username" property="username" />
+            <result column="password" property="password" />
+            <result column="role" property="role" />
+            <result column="email" property="email" />
+            <result column="created_at" property="createdAt" />
+            <result column="lastLoginAt" property="lastLoginAt" />
+            <result column="phone_number" property="phoneNumber" />
+        </association>
+    </resultMap>
+    <select id="listAdminUsers" resultMap="adminResultMap">
+        select a.*, u.* from admin a inner join user u on a.user_id = u.user_id where u.role = 'admin'
+    </select>
+    <!--登录-->
+    <select id="getByPhoneAndPassword" resultType="usc.emrsytem.springboot.entity.User">
+        select * from user where phone_number = #{phoneNumber} and password = #{password}
+    </select>
+
+    <!--==========添加==========-->
+    <!--添加用户-->
+    <insert id="addUser" useGeneratedKeys="true" keyProperty="userId">
+        insert into user (username, password, phone_number, email, role)
+        values (#{username}, #{password}, #{phoneNumber}, #{email}, #{role})
+    </insert>
+    <insert id="addPatient">
+        insert into patient ( user_id, gender, date_of_birth, address, emergency_contact, contact_phone, medical_history, allergies)
+        values ( #{userId}, #{gender}, #{dateOfBirth}, #{address}, #{emergencyContact}, #{contactPhone}, #{medicalHistory}, #{allergies})
+    </insert>
+    <insert id="addDoctor">
+        insert into doctor (user_id, department, gender, specialty, qualification, experience_years)
+        values (#{userId}, #{department}, #{gender}, #{specialty}, #{qualification}, #{experienceYears})
+    </insert>
+    <insert id="addAdmin">
+        insert into admin ( user_id, admin_level, department)
+        value ( #{userId}, #{adminLevel}, #{department})
+    </insert>
+
+    <!--==========删除==========-->
+    <!--<delete id="deleteByIds">-->
+    <!--    delete from user where user_id in-->
+    <!--        <foreach collection="ids" item="id" open="(" separator="," close=")">-->
+    <!--            #{id}-->
+    <!--        </foreach>-->
+    <!--</delete>-->
+    <delete id="deleteUserByRole">
+        <!-- 删除扩展表中的记录 -->
+        <choose>
+            <when test="role == 'patient'">
+                DELETE FROM patient WHERE user_id = #{userId};
+            </when>
+            <when test="role == 'doctor'">
+                DELETE FROM doctor WHERE user_id = #{userId};
+            </when>
+            <when test="role == 'admin'">
+                DELETE FROM admin WHERE user_id = #{userId};
+            </when>
+            <otherwise>
+                <!-- 如果role未匹配，抛出异常或写其他处理逻辑 -->
+                <!-- 可以选择不写，意味着不操作任何表 -->
+            </otherwise>
+        </choose>
+    </delete>
+    <delete id="deleteFromUser">
+        DELETE FROM user WHERE user_id = #{userId};
+    </delete>
+
+    <!--==========修改==========-->
+    <update id="updateUser">
+        <if test="userId != null">
+            UPDATE user
+            <set>
+                <if test="username != null">username = #{username},</if>
+                <if test="email != null">email = #{email},</if>
+                <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+            </set>
+            WHERE user_id = #{userId};
+        </if>
+    </update>
+    <update id="updatePatient">
+        <if test="user.userId != null and user.role == 'patient'">
+            UPDATE patient
+            <set>
+                <if test="gender != null">gender = #{gender},</if>
+                <if test="dateOfBirth != null">date_of_birth = #{dateOfBirth},</if>
+                <if test="address != null">address = #{address},</if>
+                <if test="emergencyContact != null">emergency_contact = #{emergencyContact},</if>
+                <if test="contactPhone != null">contact_phone = #{contactPhone},</if>
+                <if test="medicalHistory != null">medical_history = #{medicalHistory},</if>
+                <if test="allergies != null">allergies = #{allergies},</if>
+                <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            </set>
+            WHERE user_id = #{user.userId};
+        </if>
+    </update>
+    <update id="updateDoctor">
+        <if test="user.userId != null and user.role == 'doctor'">
+            UPDATE doctor
+            <set>
+                <if test="gender != null">gender = #{gender},</if>
+                <if test="department != null">department = #{department},</if>
+                <if test="specialty != null">specialty = #{specialty},</if>
+                <if test="qualification != null">qualification = #{qualification},</if>
+                <if test="experienceYears != null">experience_years = #{experienceYears},</if>
+                <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            </set>
+            WHERE user_id = #{user.userId};
+        </if>
+    </update>
+    <update id="updateAdmin">
+        <if test="user.role == 'admin' and user.userId != null">
+            UPDATE admin
+            <set>
+                <if test="department != null">department = #{department},</if>
+                <if test="adminLevel != null">admin_level = #{adminLevel},</if>
+                <if test="updatedAt != null">updated_at = #{updatedAt},</if>
+            </set>
+            WHERE user_id = #{user.userId};
+        </if>
+    </update>
+</mapper>

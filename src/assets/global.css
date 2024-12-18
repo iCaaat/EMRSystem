@@ -1,0 +1,12 @@
+body {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    color: #2c3e50;
+    margin: 0;
+    padding: 0;
+}
+
+/* 去除 router-link 下划线和颜色 */
+.router-link {
+    text-decoration: none;  /* 去除下划线 */
+    color: inherit;         /* 继承父元素的颜色 */
+}
