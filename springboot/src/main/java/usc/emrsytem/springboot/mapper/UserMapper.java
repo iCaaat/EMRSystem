@@ -32,6 +32,10 @@ public interface UserMapper {
     List<Admin> listAdminUsers();
     // 根据id查询用户
     User getUserId (Integer integer);
+    // 根据id查询病人
+    Patient getPatientById(Integer integer);
+    // 根据id查询医生
+    Doctor getDoctorById(Integer integer);
     // 根据手机号和密码查询
     User getByPhoneAndPassword(@Param("phoneNumber") String phoneNumber, @Param("password") String password);
 

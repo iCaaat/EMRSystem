@@ -1,7 +1,7 @@
 <script>
-import PatientForm from "@/views/user/PatientForm.vue";
-import DoctorForm from "@/views/user/DoctorForm.vue";
-import AdminForm from "@/views/user/AdminForm.vue";
+import PatientForm from "@/components/user/PatientForm.vue";
+import DoctorForm from "@/components/user/DoctorForm.vue";
+import AdminForm from "@/components/user/AdminForm.vue";
 import request from "@/utils/request";
 import {Alert} from "element-ui";
 export default {

@@ -15,10 +15,14 @@ import AppHeader from "@/components/AppHeader.vue";
 import AppAside from "@/components/AppAside.vue";
 import AppMain from "@/components/AppMain.vue";
 import auth from '@/utils/auth'; // 引入 auth.js
+import SlideVerify from 'vue-monoplasty-slide-verify';// 滑块验证码
+
+
 
 Vue.config.productionTip = false
 
 Vue.use(ElementUI, { size: 'medium'});
+Vue.use(SlideVerify); // 滑块验证码
 
 Vue.directive(
     'loading', {

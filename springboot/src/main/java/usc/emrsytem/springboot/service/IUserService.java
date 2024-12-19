@@ -19,6 +19,8 @@ public interface IUserService {
     List<Patient> patientList();// 查询所有患者
     List<Doctor> doctorList();// 查询所有医生
     List<Admin> adminList();// 查询所有管理员
+    Doctor getDoctorById(Integer userId);// 根据id查询医生
+    Patient getPatientById(Integer userId);// 根据id查询患者
 
     // 添加
     int addPatient(Patient patient);

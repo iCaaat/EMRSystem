@@ -46,6 +46,16 @@ const routes = [
         path: 'AppMain',
         name: 'AppMain',
         component: () => import('@/components/AppMain.vue')
+      },
+      {
+        path: 'AssignedPatients',
+        name: 'AssignedPatients',
+        component: () => import('@/views/MedicalRecord/AssignedPatients.vue')
+      },
+      {
+        path: 'BindPatientAndDoctor',
+        name: 'BindPatientAndDoctor',
+        component: () => import('@/views/MedicalRecord/BindPatientAndDoctor.vue')
       }
     ]
   },

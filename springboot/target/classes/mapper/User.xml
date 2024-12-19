@@ -128,6 +128,12 @@
     <select id="getUserId" resultType="usc.emrsytem.springboot.entity.User">
         select * from user where user_id = #{userId}
     </select>
+    <select id="getPatientById" resultType="usc.emrsytem.springboot.entity.Patient">
+        select * from patient where user_id = #{userId}
+    </select>
+    <select id="getDoctorById" resultType="usc.emrsytem.springboot.entity.Doctor">
+        select * from doctor where user_id = #{userId}
+    </select>
 
     <!--==========添加==========-->
     <!--添加用户-->
@@ -147,6 +153,7 @@
         insert into admin ( user_id, admin_level, department)
         value ( #{userId}, #{adminLevel}, #{department})
     </insert>
+
 
     <!--==========删除==========-->
     <!--<delete id="deleteByIds">-->

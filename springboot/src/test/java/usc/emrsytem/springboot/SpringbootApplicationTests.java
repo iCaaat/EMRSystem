@@ -1,8 +1,8 @@
 package usc.emrsytem.springboot;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import usc.emrsytem.springboot.mapper.DoctorPatientMapper;
 import usc.emrsytem.springboot.mapper.UserMapper;
 import usc.emrsytem.springboot.service.impl.UserService;
 
@@ -13,6 +13,8 @@ class SpringbootApplicationTests {
 	private UserMapper userMapper;
     @Autowired
     private UserService userService;
+	@Autowired
+	private DoctorPatientMapper doctorPatientMapper;
 
 //	@Test
 //	public void addUser() {
@@ -59,11 +61,28 @@ class SpringbootApplicationTests {
 //		}
 //	}
 
-	@Test
-	public void getById() {
-		Integer id = 2026;
-		System.out.println(userService.getById(id));
-		System.out.println(userMapper.getUserId(id));
-	}
+//	@Test
+//	public void getById() {
+//		Integer id = 2026;
+//		System.out.println(userService.getById(id));
+//		System.out.println(userMapper.getUserId(id));
+//	}
 
+//	@Test
+//	public void addDoctorPatient() {
+//		Integer doctorId = 3;
+//		Integer patientId = 8;
+//		doctorPatientMapper.addDoctorPatient(doctorId, patientId);
+//	}
+
+//	@Test
+//	public void getDoctorById() {
+//		Integer userId = 2023;
+//		System.out.println(userService.getDoctorById(userId));
+//	}
+//	@Test
+//	public void getPatientById() {
+//		Integer userId = 2022;
+//		System.out.println(userMapper.getPatientById(userId));
+//	}
 }

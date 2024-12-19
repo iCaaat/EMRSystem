@@ -47,6 +47,15 @@ public class UserController {
         List<Admin> admin = userService.adminList();
         return Result.success(admin);
     }
+//    @GetMapping("getDoctorById")
+//    public Result getDoctorById(@RequestParam("userId") Integer userId){
+//        return Result.success(userService.getDoctorById(userId));
+//
+//    }
+//    @GetMapping("getPatientById/{id}")
+//    public Result getPatientById(@PathVariable Integer id){
+//        return Result.success(userService.getPatientById(id));
+//    }
 
 //    @GetMapping("/info/{id}")
 //    public Result info(@PathVariable Integer id) {

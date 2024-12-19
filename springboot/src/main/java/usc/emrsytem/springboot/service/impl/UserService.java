@@ -67,6 +67,16 @@ public class UserService implements IUserService {
     public User getById(Integer integer) {
         return userMapper.getUserId(integer);
     }
+    // 根据id查询医生
+    @Override
+    public Doctor getDoctorById(Integer userId) {
+        return userMapper.getDoctorById(userId);
+    }
+    // 根据id查询患者
+    @Override
+    public Patient getPatientById(Integer userId) {
+        return userMapper.getPatientById(userId);
+    }
 
 
 
@@ -81,6 +91,13 @@ public class UserService implements IUserService {
     @Transactional
     public int addPatient(Patient patient) {
         User user = patient.getUser();
+
+        // 判断手机号是否存在
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setPhoneNumber(user.getPhoneNumber());
+        if (userMapper.getByPhone(loginRequest) != null) {
+            throw new ServiceException("手机号已存在");
+        }
 
         // 加密密码
         String encodedPassword = PasswordUtil.encode(user.getPassword());
@@ -98,6 +115,13 @@ public class UserService implements IUserService {
     public int addDoctor(Doctor doctor) {
         User user = doctor.getUser();
 
+        // 判断手机号是否存在
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setPhoneNumber(user.getPhoneNumber());
+        if (userMapper.getByPhone(loginRequest) != null) {
+            throw new ServiceException("手机号已存在");
+        }
+
         // 加密密码
         String encodedPassword = PasswordUtil.encode(user.getPassword());
         user.setPassword(encodedPassword);
@@ -112,6 +136,13 @@ public class UserService implements IUserService {
     @Transactional
     public int addAdmin(Admin admin) {
         User user = admin.getUser();
+
+        // 判断手机号是否存在
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setPhoneNumber(user.getPhoneNumber());
+        if (userMapper.getByPhone(loginRequest) != null) {
+            throw new ServiceException("手机号已存在");
+        }
 
         // 加密密码
         String encodedPassword = PasswordUtil.encode(user.getPassword());
@@ -142,6 +173,14 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public int updateUser(User user) {
+
+        // 判断手机号是否存在
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setPhoneNumber(user.getPhoneNumber());
+        if (userMapper.getByPhone(loginRequest) != null) {
+            throw new ServiceException("手机号已存在");
+        }
+
         userMapper.updateUser(user);
         return 0;
     }
@@ -150,6 +189,14 @@ public class UserService implements IUserService {
     @Transactional
     public int updatePatient(Patient patient) {
         User user = patient.getUser();
+
+        // 判断手机号是否存在
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setPhoneNumber(user.getPhoneNumber());
+        if (userMapper.getByPhone(loginRequest) != null) {
+            throw new ServiceException("手机号已存在");
+        }
+
         if(Objects.equals(user.getRole(), "患者")) {
             user.setRole("patient");
         }
@@ -174,6 +221,14 @@ public class UserService implements IUserService {
     @Transactional
     public int updateDoctor(Doctor doctor) {
         User user = doctor.getUser();
+
+        // 判断手机号是否存在
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setPhoneNumber(user.getPhoneNumber());
+        if (userMapper.getByPhone(loginRequest) != null) {
+            throw new ServiceException("手机号已存在");
+        }
+
         if(Objects.equals(user.getRole(), "医生")) {
             user.setRole("doctor");
         }
@@ -199,6 +254,14 @@ public class UserService implements IUserService {
     @Transactional
     public int updateAdmin(Admin admin) {
         User user = admin.getUser();
+
+        // 判断手机号是否存在
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setPhoneNumber(user.getPhoneNumber());
+        if (userMapper.getByPhone(loginRequest) != null) {
+            throw new ServiceException("手机号已存在");
+        }
+
         if(Objects.equals(user.getRole(), "管理员")) {
             user.setRole("admin");
         }

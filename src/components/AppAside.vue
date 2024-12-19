@@ -59,7 +59,7 @@ export default {
           <span>门诊病历管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="3-1">
+          <el-menu-item index="3-1" :route="{path:'/AssignedPatients'}">
             <i class="el-icon-user"></i>
             <span slot="title">查看名下患者</span>
           </el-menu-item>
@@ -70,6 +70,10 @@ export default {
           <el-menu-item index="3-3">
             <i class="el-icon-edit-outline"></i>
             <span slot="title">管理病历</span>
+          </el-menu-item>
+          <el-menu-item index="3-4" :route="{path: '/BindPatientAndDoctor'}">
+            <i class="el-icon-edit-outline"></i>
+            <span slot="title">注册医生病人关系</span>
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>

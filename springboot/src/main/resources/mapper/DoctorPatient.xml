@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="usc.emrsytem.springboot.mapper.DoctorPatientMapper">
+    <insert id="addDoctorPatient">
+        insert into doctor_patient (doctor_id, patient_id) values (#{doctorId}, #{patientId})
+    </insert>
+    <select id="getByDocAndPatId" resultType="usc.emrsytem.springboot.entity.DoctorPatient">
+        select * from doctor_patient where doctor_id = #{doctorId} and patient_id = #{patientId}
+    </select>
+</mapper>
