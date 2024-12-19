@@ -186,6 +186,7 @@
                 <if test="password != null">password = #{password},</if>
                 <if test="email != null">email = #{email},</if>
                 <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+                <if test="status != null">status = #{status}</if>
             </set>
             WHERE user_id = #{userId};
         </if>

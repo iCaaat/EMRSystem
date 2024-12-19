@@ -461,6 +461,25 @@ export default {
         }
       })
     },
+    // 修改用户状态
+    changeStatus(row) {
+      if (this.user.userId === row.userId && !row.status) {
+        row.status = true
+        this.$notify.error("不能修改自己的状态")
+        return
+      }
+      let temp = row
+      temp.createdAt = null
+      temp.lastLoginAt = null
+      request.put('/user/updateUser', row).then(res => {
+        if(res.code === '200') {
+          this.$notify.success("修改用户状态成功")
+          this.load();
+        } else {
+          this.$notify.error(res.msg)
+        }
+      })
+    },
 
     // 表单验证
     checkPhone(rule, value, callback) {
@@ -519,10 +538,20 @@ export default {
     <el-table-column prop='lastLoginAt' label="最后登录于" ></el-table-column>
     <el-table-column label="操作">
       <template v-slot="scoped">
-        <el-link type="primary" style="margin: 2px" @click="viewDetails(scoped.row)">查看详细</el-link>
+        <el-link type="primary" style="margin: 2px" @click="viewDetails(scoped.row)">详细</el-link>
         <el-link type="warning" style="margin: 2px" @click="viewUpdateForm(scoped.row)">修改</el-link>
         <el-link type="danger" style="margin: 2px" @click="deleteUserRequest(scoped.row)">删除</el-link>
         <el-link type="warning" style="margin: 2px" @click="viewChangePasswordForm(scoped.row)">修改密码</el-link>
+      </template>
+    </el-table-column>
+    <el-table-column label="状态" width="70">
+      <template v-slot="scoped">
+        <el-switch
+            v-model="scoped.row.status"
+            @change="changeStatus(scoped.row)"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+        </el-switch>
       </template>
     </el-table-column>
   </el-table>

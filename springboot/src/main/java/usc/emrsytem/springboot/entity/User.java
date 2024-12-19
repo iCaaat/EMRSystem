@@ -14,5 +14,5 @@ public class User {
     private String phoneNumber;
     private Timestamp createdAt;
     private Timestamp lastLoginAt;
-
+    private boolean status;
 }

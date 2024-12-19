@@ -141,6 +141,13 @@ public class UserService implements IUserService {
     // 更新用户信息
     @Override
     @Transactional
+    public int updateUser(User user) {
+        userMapper.updateUser(user);
+        return 0;
+    }
+    // 更新病人信息
+    @Override
+    @Transactional
     public int updatePatient(Patient patient) {
         User user = patient.getUser();
         if(Objects.equals(user.getRole(), "患者")) {
@@ -225,6 +232,11 @@ public class UserService implements IUserService {
         boolean isPasswordMatch = PasswordUtil.matches(loginRequest.getPassword(), user.getPassword());
         if (!isPasswordMatch) {
             throw new ServiceException("用户名或密码错误");
+        }
+
+        // 判断状态是否可用
+        if (!user.isStatus()) {
+            throw new ServiceException("用户已被禁用，请联系管理员");
         }
 
         // 修改最后登录时间

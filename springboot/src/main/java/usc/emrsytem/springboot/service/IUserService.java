@@ -32,10 +32,14 @@ public interface IUserService {
     int updatePatient(Patient patient);
     int updateDoctor(Doctor doctor);
     int updateAdmin(Admin admin);
+    int updateUser(User user);
+    void changePassword(PasswordRequest request);
 
     LoginDTO login(LoginRequest loginRequest);
 
     User getById(Integer integer);
 
-    void changePassword(PasswordRequest request);
+
+
+
 }

@@ -3,7 +3,6 @@ package usc.emrsytem.springboot.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import usc.emrsytem.springboot.common.Result;
-import usc.emrsytem.springboot.controller.dto.LoginDTO;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
 import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
@@ -83,6 +82,11 @@ public class UserController {
     }
 
     // 修改
+    @PutMapping("/updateUser")
+    public Result updateUser(@RequestBody User user) {
+        userService.updateUser(user);
+        return Result.success();
+    }
     @PostMapping("/updatePatient")
     public Result updateUser(@RequestBody Patient patient) {
         userService.updatePatient(patient);
