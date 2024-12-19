@@ -99,6 +99,7 @@ public class UserController {
 
     // 登录
     // 添加管理员
+//    @CrossOrigin
     @PostMapping("/login")
     public Result Login(@RequestBody LoginRequest loginRequest) {
         return Result.success(userService.login(loginRequest));

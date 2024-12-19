@@ -28,6 +28,8 @@ public interface UserMapper {
     List<Doctor> listDoctorUsers();
     // 查询所有角色为管理员的用户
     List<Admin> listAdminUsers();
+    // 根据id查询用户
+    User getUserId (Integer integer);
 
     // 添加用户
     int addUser(User user);
@@ -51,7 +53,12 @@ public interface UserMapper {
     int updateAdmin(Admin admin);
 
     // 登录
+    // 根据手机号和密码查询用户
     User getByPhoneAndPassword(LoginRequest loginRequest);
+    // 根据手机号查询用户
+    User getByPhone(LoginRequest loginRequest);
+    // 修改最后登录时间
+    int updateLastLoginTime(User user);
 
     @Select("select * from users where username=#{username}")
     public List<User> selectByUsername(String username);

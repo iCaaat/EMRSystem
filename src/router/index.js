@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 
 Vue.use(VueRouter)
 
+
 const routes = [
     // ==========登录==========
   {
@@ -17,7 +18,7 @@ const routes = [
     // ==========主页=========
   {
     path: '/',
-    name: '/',
+    name: 'h',
     component: AppContainer,
     redirect: '/home',
     children: [
@@ -49,6 +50,12 @@ const routes = [
     ]
   },
 
+    // ==========404页面=========
+  {
+    path: '*',
+    component: () => import('@/views/404.vue')
+  }
+
 ]
 
 const router = new VueRouter({
@@ -59,12 +66,11 @@ const router = new VueRouter({
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  const userCookie = Cookies.get('user');
-
   if (to.path === '/login') {
     return next();
   }
-  if (!userCookie) {
+  const userCookie = Cookies.get('user');
+  if (!userCookie && to.path !== '/login') {
     return next('/login');
   }
   next();

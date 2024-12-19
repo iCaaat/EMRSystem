@@ -55,6 +55,14 @@ export default {
         ],
         experienceYears: [
           { required: true, message: '请输入工作年限', trigger: 'blur' },
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { validator: this.checkPassword, trigger: 'blur' }
+        ],
+        email: [
+          { required: false, message: '请输入邮箱', trigger: 'blur' },
+          { validator: this.checkEmail, trigger: 'blur' }
         ]
       },
       // 管理等级选择
@@ -261,14 +269,18 @@ export default {
       // console.log(this.patientData)
       // console.log(rowUser)
       if (rowUser.role === '患者') {
+        this.patientDetailForm = true
+        this.doctorDetailForm = false
+        this.adminDetailForm = false
+        this.updateDialogFormVisible = true;
         try {
           for (let i = 0; i < this.patientData.length; i++) {
             // console.log(this.patientData[i])
             if (this.patientData[i].userId === rowUser.userId) {
               // 将this.patientData[i]拷贝到this.tempData
               // console.log(this.patientData[i])
-              this.tempData = {...this.doctorData[i]};
-              this.selectedUser = {...this.doctorData[i]};
+              this.tempData = {...this.patientData[i]};
+              this.selectedUser = {...this.patientData[i]};
               // console.log(this.selectedUser)
               // console.log(this.tempData)
               break
@@ -277,10 +289,6 @@ export default {
         } catch (e) {
           console.error(e)
         }
-        this.patientDetailForm = true
-        this.doctorDetailForm = false
-        this.adminDetailForm = false
-        this.updateDialogFormVisible = true;
       }
       if (rowUser.role === '医生') {
         this.patientDetailForm = false
@@ -411,6 +419,18 @@ export default {
         callback(new Error('请输入正确的手机号'));
       }
       callback();
+    },
+    checkPassword(rule, value, callback) {
+      if (value.length < 6) {
+        callback(new Error('密码不能少于6位'));
+      }
+      callback();
+    },
+    checkEmail(rule, value, callback) {
+      if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)) {
+        callback(new Error('请输入正确的邮箱'));
+      }
+      callback();
     }
   }
 }
@@ -519,7 +539,10 @@ export default {
       <el-form-item label="姓名" prop="username">
         <el-input v-model="tempData?.user.username"></el-input>
       </el-form-item>
-      <el-form-item label="邮件">
+      <!--<el-form-item label="密码" prop="password">-->
+      <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
+      <!--</el-form-item>-->
+      <el-form-item label="邮件" prop="email">
         <el-input v-model="tempData?.user.email"></el-input>
       </el-form-item>
       <el-form-item label="电话" prop="phoneNumber">
@@ -570,7 +593,10 @@ export default {
       <el-form-item label="姓名" prop="username">
         <el-input v-model="tempData?.user.username"></el-input>
       </el-form-item>
-      <el-form-item label="邮件">
+      <!--<el-form-item label="密码" prop="password">-->
+      <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
+      <!--</el-form-item>-->
+      <el-form-item label="邮件" prop="email">
         <el-input v-model="tempData?.user.email"></el-input>
       </el-form-item>
       <el-form-item label="电话" prop="phoneNumber">
@@ -601,7 +627,10 @@ export default {
       <el-form-item label="姓名" prop="username">
         <el-input v-model="tempData?.user.username"></el-input>
       </el-form-item>
-      <el-form-item label="邮件">
+      <!--<el-form-item label="密码" prop="password">-->
+      <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
+      <!--</el-form-item>-->
+      <el-form-item label="邮件" prop="email">
         <el-input v-model="tempData?.user.email"></el-input>
       </el-form-item>
       <el-form-item label="电话" prop="phoneNumber">

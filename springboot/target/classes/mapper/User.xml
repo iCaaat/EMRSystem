@@ -122,6 +122,12 @@
     <select id="getByPhoneAndPassword" resultType="usc.emrsytem.springboot.entity.User">
         select * from user where phone_number = #{phoneNumber} and password = #{password}
     </select>
+    <select id="getByPhone" resultType="usc.emrsytem.springboot.entity.User">
+        select * from user where phone_number = #{phoneNumber}
+    </select>
+    <select id="getUserId" resultType="usc.emrsytem.springboot.entity.User">
+        select * from user where user_id = #{userId}
+    </select>
 
     <!--==========添加==========-->
     <!--添加用户-->
@@ -177,6 +183,7 @@
             UPDATE user
             <set>
                 <if test="username != null">username = #{username},</if>
+                <if test="password != null">password = #{password},</if>
                 <if test="email != null">email = #{email},</if>
                 <if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
             </set>
@@ -223,5 +230,8 @@
             </set>
             WHERE user_id = #{user.userId};
         </if>
+    </update>
+    <update id="updateLastLoginTime">
+        UPDATE user SET last_login_at = #{lastLoginAt} WHERE user_id = #{userId};
     </update>
 </mapper>

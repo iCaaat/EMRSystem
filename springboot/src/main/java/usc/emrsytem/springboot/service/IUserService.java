@@ -33,4 +33,6 @@ public interface IUserService {
     int updateAdmin(Admin admin);
 
     LoginDTO login(LoginRequest loginRequest);
+
+    User getById(Integer integer);
 }

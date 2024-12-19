@@ -25,7 +25,8 @@ export default {
             { required: false, message: '请输入紧急联系人', trigger: 'blur' }
         ],
         contactPhone: [
-            { required: false, message: '请输入联系电话', trigger: 'blur' }
+            { required: false, message: '请输入联系电话', trigger: 'blur' },
+            { pattern: /^1[3456789]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
         ],
         medicalHistory: [
             { required: false, message: '请输入病史', trigger: 'blur' }

@@ -25,7 +25,9 @@ export default {
           { required: true, message: '请输入姓名', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: '请输入密码', trigger: 'blur' }
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, message: '密码长度不能小于6位', trigger: 'blur' },
+          { max: 18, message: '密码长度不能大于18位', trigger: 'blur' }
         ],
         role: [
           { required: true, message: '请选择角色', trigger: 'change' }
@@ -133,7 +135,7 @@ export default {
         <el-input v-model="form.username" placeholder="请输入姓名"></el-input>
       </el-form-item>
       <el-form-item label="密码" prop="password">
-        <el-input v-model="form.password" placeholder="请输入密码"></el-input>
+        <el-input v-model="form.password" placeholder="请输入密码" show-password></el-input>
       </el-form-item>
       <el-form-item label="邮件" prop="email">
         <el-input v-model="form.email" placeholder="请输入邮件"></el-input>

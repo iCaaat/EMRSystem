@@ -1,14 +1,18 @@
 package usc.emrsytem.springboot;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import usc.emrsytem.springboot.mapper.UserMapper;
+import usc.emrsytem.springboot.service.impl.UserService;
 
 @SpringBootTest
 class SpringbootApplicationTests {
 
 	@Autowired
 	private UserMapper userMapper;
+    @Autowired
+    private UserService userService;
 
 //	@Test
 //	public void addUser() {
@@ -54,5 +58,12 @@ class SpringbootApplicationTests {
 //			System.out.println(admin);
 //		}
 //	}
+
+	@Test
+	public void getById() {
+		Integer id = 2026;
+		System.out.println(userService.getById(id));
+		System.out.println(userMapper.getUserId(id));
+	}
 
 }

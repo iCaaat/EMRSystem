@@ -45,9 +45,9 @@ export default {
 </script>
 
 <template>
-<div style="background-image: url('@/assets/bg_2.jpg'); height: 100vh">
+<div style="height: 100vh">
   <div style="width: 500px; height: 400px; background-color: #ecf5ff; border-radius: 10px;
-  margin: 150px auto;padding: 50px">
+  margin: 150px auto; padding: 50px;">
     <h1 style="text-align: center; margin: 30px; font-weight: bold; color: dodgerblue">登录</h1>
     <el-form :model="user" ref="loginForm" style="margin: 50px" :rules="loginRules">
       <el-form-item  prop="phoneNumber">

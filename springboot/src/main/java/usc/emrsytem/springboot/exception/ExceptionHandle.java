@@ -1,5 +1,6 @@
 package usc.emrsytem.springboot.exception;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -19,6 +20,10 @@ public class ExceptionHandle {
     @ExceptionHandler(value = ServiceException.class)
     public Result serviceExceptionError(ServiceException e){
         log.error("业务异常",e);
+        String code = e.getCode();
+        if (StrUtil.isNotBlank(code)) {
+            return Result.error(code, e.getMessage());
+        }
         return Result.error(e.getMessage());
     }
 

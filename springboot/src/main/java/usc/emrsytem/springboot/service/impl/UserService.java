@@ -17,7 +17,10 @@ import usc.emrsytem.springboot.entity.User;
 import usc.emrsytem.springboot.exception.ServiceException;
 import usc.emrsytem.springboot.mapper.UserMapper;
 import usc.emrsytem.springboot.service.IUserService;
+import usc.emrsytem.springboot.utils.PasswordUtil;
+import usc.emrsytem.springboot.utils.TokenUtils;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,6 +61,12 @@ public class UserService implements IUserService {
     public List<Admin> adminList() {
         return userMapper.listAdminUsers();
     }
+    // 根据id查询用户
+    @Override
+    public User getById(Integer integer) {
+        return userMapper.getUserId(integer);
+    }
+
 
 
 
@@ -71,6 +80,12 @@ public class UserService implements IUserService {
     @Transactional
     public int addPatient(Patient patient) {
         User user = patient.getUser();
+
+        // 加密密码
+        String encodedPassword = PasswordUtil.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
+        // 存入数据库
         userMapper.addUser(user);
         patient.setUserId(user.getUserId());
         userMapper.addPatient(patient);
@@ -81,6 +96,11 @@ public class UserService implements IUserService {
     @Transactional
     public int addDoctor(Doctor doctor) {
         User user = doctor.getUser();
+
+        // 加密密码
+        String encodedPassword = PasswordUtil.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
         userMapper.addUser(user);
         doctor.setUserId(user.getUserId());
         userMapper.addDoctor(doctor);
@@ -91,6 +111,11 @@ public class UserService implements IUserService {
     @Transactional
     public int addAdmin(Admin admin) {
         User user = admin.getUser();
+
+        // 加密密码
+        String encodedPassword = PasswordUtil.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
         userMapper.addUser(user);
         admin.setUserId(user.getUserId());
         userMapper.addAdmin(admin);
@@ -126,6 +151,12 @@ public class UserService implements IUserService {
             patient.setGender("female");
         }
 
+        // 加密密码
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String encodedPassword = PasswordUtil.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
         userMapper.updateUser(user);
         userMapper.updatePatient(patient);
         return 0;
@@ -138,11 +169,18 @@ public class UserService implements IUserService {
         if(Objects.equals(user.getRole(), "医生")) {
             user.setRole("doctor");
         }
-        if(Objects.equals(doctor.getGender(), "男")) {
+        if(Objects.equals(doctor.getGender(), "男") || Objects.equals(doctor.getGender(), "male")) {
             doctor.setGender("male");
         } else {
             doctor.setGender("female");
         }
+
+        // 加密密码
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String encodedPassword = PasswordUtil.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
 
         userMapper.updateUser(user);
         userMapper.updateDoctor(doctor);
@@ -161,6 +199,13 @@ public class UserService implements IUserService {
         } else {
             admin.setAdminLevel("normal");
         }
+
+        // 加密密码
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            String encodedPassword = PasswordUtil.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
         userMapper.updateUser(user);
         userMapper.updateAdmin(admin);
         return 0;
@@ -168,14 +213,35 @@ public class UserService implements IUserService {
 
     // 登录
     @Override
+    @Transactional
     public LoginDTO login(LoginRequest loginRequest) {
-        User user = userMapper.getByPhoneAndPassword(loginRequest);
+        User user = userMapper.getByPhone(loginRequest);
         if (user == null) {
+            throw new ServiceException("用户不存在");
+        }
+
+        // 验证密码是否匹配
+        boolean isPasswordMatch = PasswordUtil.matches(loginRequest.getPassword(), user.getPassword());
+        if (!isPasswordMatch) {
             throw new ServiceException("用户名或密码错误");
         }
+
+        // 修改最后登录时间
+        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        User tempUser = new User();
+        tempUser.setUserId(user.getUserId());
+        tempUser.setLastLoginAt(currentTime);
+        userMapper.updateLastLoginTime(tempUser);
+
+
         LoginDTO loginDTO = new LoginDTO();
         BeanUtils.copyProperties(user, loginDTO);
+
+        String token = TokenUtils.genToken(String.valueOf(user.getUserId()), user.getPassword());
+        loginDTO.setToken(token);
         return loginDTO;
     }
+
+
 
 }

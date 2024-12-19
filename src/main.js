@@ -14,6 +14,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import AppHeader from "@/components/AppHeader.vue";
 import AppAside from "@/components/AppAside.vue";
 import AppMain from "@/components/AppMain.vue";
+import auth from '@/utils/auth'; // 引入 auth.js
 
 Vue.config.productionTip = false
 
@@ -39,6 +40,13 @@ Vue.component(
 Vue.component(
     "AppMain", AppMain
 )
+
+// 监听未授权事件
+auth.$on('unauthorized', () => {
+    if (router.currentRoute.path !== '/login') {
+        router.push('/login');
+    }
+});
 
 new Vue({
   router,
