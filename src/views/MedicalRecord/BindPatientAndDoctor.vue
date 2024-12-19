@@ -11,6 +11,8 @@ export default {
       patientTableData: [],
       doctorTableData: [],
       userData: [],
+      selectedDoctor: [],
+      selectedPatient: [],
       total: 0,
       params: {
         username: '',
@@ -66,7 +68,7 @@ export default {
         // console.log("res:" + JSON.stringify(res, null, 2))
         if (res.code === '200') {
           this.patientTableData = res.data
-          // console.log(JSON.stringify(this.patientData))
+          // console.log(JSON.stringify(this.patientTableData))
         }
       })
     },
@@ -76,7 +78,7 @@ export default {
         // console.log("res:" + JSON.stringify(res, null, 2))
         if (res.code === '200') {
           this.doctorTableData = res.data
-          // console.log(JSON.stringify(this.doctorData))
+          // console.log(JSON.stringify(this.doctorTableData))
         }
       })
     },
@@ -97,10 +99,22 @@ export default {
       }
     },
     confirmDoc() {
-      console.log(this.doctorValue)
       if (this.doctorValue === null || this.doctorValue === '') {
         this.$message.error('请选择医生')
         return
+      }
+      // console.log(this.doctorValue)
+      // console.log(JSON.stringify(this.doctorTableData))
+      try {
+        let num = Number(this.doctorValue)
+        for (let i = 0; i < this.doctorTableData.length; i++) {
+          if (this.doctorTableData[i].userId === num) {
+            this.selectedDoctor.push(this.doctorTableData[i])
+            // console.log(JSON.stringify(this.selectedDoctor))
+          }
+        }
+      } catch (e) {
+        console.log(e)
       }
       this.confirmDoctor = true;
       this.patientValue = '';
@@ -123,7 +137,7 @@ export default {
         if (res.code === '200') {
           this.$message.success('绑定成功')
         } else {
-          this.$message.error('绑定失败')
+          this.$message.error(res.msg)
         }
         this.load()
       })
@@ -151,6 +165,32 @@ export default {
       </el-select>
       <el-button @click="confirmDoc">确定医生</el-button>
     </div>
+    <div>
+      <el-table
+          v-if="confirmDoctor"
+          :data="selectedDoctor"
+          style="width: 80%">
+        <el-table-column
+            prop="userId"
+            label="用户ID">
+        </el-table-column>
+        <el-table-column
+            prop="user.username"
+            label="医生姓名"
+            width="auto">
+        </el-table-column>
+        <el-table-column
+            prop="department"
+            label="部门"
+            width="auto">
+        </el-table-column>
+        <el-table-column
+            prop="specialty"
+            label="专业领域"
+            width="auto">
+        </el-table-column>
+      </el-table>
+    </div>
     <div v-if="confirmDoctor">
       <el-select
           v-model="patientValue"
@@ -165,7 +205,7 @@ export default {
             :value="item.value">
         </el-option>
       </el-select>
-      <el-button type="primary" @click="confirmAdd">添加</el-button>
+      <el-button type="primary" @click="confirmAdd">添加患者</el-button>
     </div>
 
   </div>

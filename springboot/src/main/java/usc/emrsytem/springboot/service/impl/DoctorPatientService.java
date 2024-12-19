@@ -24,7 +24,7 @@ public class DoctorPatientService implements IDoctorPatientService {
     public int addDoctorPatient(DoctorPatientRequest doctorPatientRequest) {
         Integer doctorUserId = doctorPatientRequest.getDoctorValue();
         List<Integer> patientUserIds = doctorPatientRequest.getPatientValues();
-        if (doctorUserId == null || patientUserIds == null || patientUserIds.size() == 0) {
+        if (doctorUserId == null || patientUserIds == null || patientUserIds.isEmpty()) {
             throw new ServiceException("参数不能为空");
         }
         for (Integer patientUserId : patientUserIds) {
@@ -34,7 +34,7 @@ public class DoctorPatientService implements IDoctorPatientService {
                 throw new ServiceException("用户不存在");
             }
             if (doctorPatientMapper.getByDocAndPatId(doctorId, patientId) != null) {
-                throw new ServiceException("医生和患者关系已存在");
+                throw new ServiceException("医生 userId: " + doctorUserId + "和患者 userId: " + patientUserId +"关系已存在");
             }
             doctorPatientMapper.addDoctorPatient(doctorId, patientId);
 
