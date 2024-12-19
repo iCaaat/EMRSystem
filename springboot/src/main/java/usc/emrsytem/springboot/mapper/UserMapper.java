@@ -1,8 +1,10 @@
 package usc.emrsytem.springboot.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
+import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
 import usc.emrsytem.springboot.entity.Admin;
 import usc.emrsytem.springboot.entity.Doctor;
@@ -30,6 +32,8 @@ public interface UserMapper {
     List<Admin> listAdminUsers();
     // 根据id查询用户
     User getUserId (Integer integer);
+    // 根据手机号和密码查询
+    User getByPhoneAndPassword(@Param("phoneNumber") String phoneNumber, @Param("password") String password);
 
     // 添加用户
     int addUser(User user);
@@ -64,4 +68,5 @@ public interface UserMapper {
     public List<User> selectByUsername(String username);
 
 
+    int updatePassword(PasswordRequest passwordRequest);
 }

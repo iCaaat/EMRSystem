@@ -1,13 +1,14 @@
 <script>
 import request from "@/utils/request";
 import dayjs from 'dayjs';
+import Cookies from "js-cookie";
 
 export default {
   name: 'AppBodyTable',
   data() {
     return {
+      user: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : {},
       tableData: [
-        // { user_id:2001, username:"admin", password:123456, sex:"男", role:"admin", email:"213123@qq.com", phone_number:"1213123", created_at:"2024.01.28", updated_at:"2024.12.12" },
       ],
       rawTableDate: [],
       rowId: 0, // 当前选中行的id
@@ -31,15 +32,15 @@ export default {
       ],
       // 修改规则
       updateRules: {
-        phoneNumber: [
+        'user.phoneNumber': [
           { required: true, message: '请输入电话号码', trigger: 'blur' },
           { validator: this.checkPhone, trigger: 'blur' }
         ],
-        username: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
+        'user.username': [
+          { required: true, message: '请输入姓名', trigger: 'blur' }
         ],
         department: [
-          { required: true, message: '请输入科室', trigger: 'blur' },
+          { required: true, message: '请输入科室', trigger: 'blur' }
         ],
         adminLevel: [
           { required: true, message: '请选择管理等级', trigger: 'change' },
@@ -58,9 +59,13 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { validator: this.checkPassword, trigger: 'blur' }
+          { min:6, max: 18, message: '密码为6~18位', trigger: 'blur' }
         ],
-        email: [
+        newPassword: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min:6, max: 18, message: '密码为6~18位', trigger: 'blur' }
+        ],
+        'user.email': [
           { required: false, message: '请输入邮箱', trigger: 'blur' },
           { validator: this.checkEmail, trigger: 'blur' }
         ]
@@ -74,10 +79,16 @@ export default {
       dialogTableVisible: false,
       // 控制修改界面对话框显示
       updateDialogFormVisible: false,
+      // 控制修改密码界面对话框显示
+      changePassDialogFormVisible: false,
       // 存储选中的用户详细信息
       selectedUser: null,
       // 存储临时数据
-      tempData: null,
+      tempData: {
+        user: { username: '', email: '', password: '', phoneNumber: ''}
+      },
+      // 修改密码表单
+      changePassForm: {},
       // rawSelectedUser: null, // 用于显示的选中的用户详细信息
       // 控制详细信息对话框角色显示
       patientDetailBool: false,
@@ -155,6 +166,9 @@ export default {
     },
     // 处理展示信息
     handleDisplayTable() {
+      if (this.tableData === null || this.tableData.length === 0) {
+        return
+      }
       this.rawTableDate = this.tableData;
       try {
         for (let i = 0; i < this.tableData.length; i++) {
@@ -175,6 +189,9 @@ export default {
       }
     },
     handleDisplaySelectedUser() {
+      if(this.selectedUser === null || this.selectedUser.length === 0) {
+        return
+      }
       if (this.selectedUser.user.role === 'patient') {
         this.selectedUser.user.role = '患者';
         this.selectedUser.gender = this.selectedUser.user.gender === 'male' ? '男' : '女'
@@ -374,34 +391,38 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let requestUrl
-        if(this.selectedUser.user.role === '患者') {
-          requestUrl= '/user/updatePatient';
-        } else if(this.selectedUser.user.role === '医生') {
-          requestUrl= '/user/updateDoctor';
-        } else if(this.selectedUser.user.role === '管理员') {
-          requestUrl= '/user/updateAdmin';
-        }
-        this.selectedUser.user.createdAt = null
-        this.selectedUser.user.lastLoginAt = null
-        console.log(JSON.stringify(this.selectedUser))
-        request({
-          url: requestUrl,
-          method: 'post',
-          data: this.selectedUser
-        }).then(res => {
-          if (res.code === '200') {
-            this.$message({
-              type: 'success',
-              message: '修改成功!'
-            });
-            this.updateDialogFormVisible = false;
-            this.tempData = this.selectedUser;
-            this.load();
-          } else {
-            this.$message({
-              type: 'error',
-              message: '修改失败!'
+        this.$refs['updateForm'].validate((valid) => {
+          if (valid) {
+            let requestUrl
+            if(this.selectedUser.user.role === '患者') {
+              requestUrl= '/user/updatePatient';
+            } else if(this.selectedUser.user.role === '医生') {
+              requestUrl= '/user/updateDoctor';
+            } else if(this.selectedUser.user.role === '管理员') {
+              requestUrl= '/user/updateAdmin';
+            }
+            this.selectedUser.user.createdAt = null
+            this.selectedUser.user.lastLoginAt = null
+            console.log(JSON.stringify(this.selectedUser))
+            request({
+              url: requestUrl,
+              method: 'post',
+              data: this.selectedUser
+            }).then(res => {
+              if (res.code === '200') {
+                this.$message({
+                  type: 'success',
+                  message: '修改成功!'
+                });
+                this.updateDialogFormVisible = false;
+                this.tempData = this.selectedUser;
+                this.load();
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: '修改失败!'
+                })
+              }
             })
           }
         })
@@ -412,25 +433,52 @@ export default {
         });
       })
     },
+    // 打开修改密码对话框
+    viewChangePasswordForm(row) {
+      this.changePassForm = JSON.parse(JSON.stringify(row));
+      // console.log(this.changePassForm);
+      this.changePassDialogFormVisible = true;
+
+    },
+    // 修改密码请求
+    changePassRequest() {
+      console.log(this.changePassForm);
+      this.$refs['changePassForm'].validate((valid) => {
+        if (valid) {
+          request.put('/user/updatePassword', this.changePassForm).then(res => {
+            if(res.code === '200') {
+              this.$notify.success("修改密码成功")
+              if (this.user.userId === this.changePassForm.userId) {
+                Cookies.remove('user')
+                this.$router.push('/login');
+              }
+              this.load();
+              this.changePassDialogFormVisible = false;
+            } else {
+              this.$notify.error("修改密码失败")
+            }
+          })
+        }
+      })
+    },
 
     // 表单验证
     checkPhone(rule, value, callback) {
+      // console.log(value)
       if (!/^[1][3,4,5,6,7,8,9][0-9]{9}$/.test(value)) {
         callback(new Error('请输入正确的手机号'));
       }
       callback();
     },
-    checkPassword(rule, value, callback) {
-      if (value.length < 6) {
-        callback(new Error('密码不能少于6位'));
-      }
-      callback();
-    },
     checkEmail(rule, value, callback) {
+      // console.log(value);
       if (!/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/.test(value)) {
         callback(new Error('请输入正确的邮箱'));
       }
       callback();
+    },
+    checkPassword(rule, value, callback) {
+      console.log(value);
     }
   }
 }
@@ -474,6 +522,7 @@ export default {
         <el-link type="primary" style="margin: 2px" @click="viewDetails(scoped.row)">查看详细</el-link>
         <el-link type="warning" style="margin: 2px" @click="viewUpdateForm(scoped.row)">修改</el-link>
         <el-link type="danger" style="margin: 2px" @click="deleteUserRequest(scoped.row)">删除</el-link>
+        <el-link type="warning" style="margin: 2px" @click="viewChangePasswordForm(scoped.row)">修改密码</el-link>
       </template>
     </el-table-column>
   </el-table>
@@ -535,18 +584,18 @@ export default {
 
   <!-- 修改界面 -->
   <el-dialog title="修改用户" :visible.sync="updateDialogFormVisible" width="60%" >
-    <el-form label-width="100px" :model="tempData" v-if="patientDetailForm" :rules="updateRules">
-      <el-form-item label="姓名" prop="username">
-        <el-input v-model="tempData?.user.username"></el-input>
+    <el-form label-width="100px" ref="updateForm" :model="tempData" v-if="patientDetailForm" :rules="updateRules">
+      <el-form-item label="姓名" prop="user.username">
+        <el-input v-model="tempData.user.username"></el-input>
       </el-form-item>
       <!--<el-form-item label="密码" prop="password">-->
       <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
       <!--</el-form-item>-->
-      <el-form-item label="邮件" prop="email">
-        <el-input v-model="tempData?.user.email"></el-input>
+      <el-form-item label="邮件" prop="user.email">
+        <el-input v-model="tempData.user.email"></el-input>
       </el-form-item>
-      <el-form-item label="电话" prop="phoneNumber">
-        <el-input v-model="tempData?.user.phoneNumber"></el-input>
+      <el-form-item label="电话" prop="user.phoneNumber">
+        <el-input v-model="tempData.user.phoneNumber"></el-input>
       </el-form-item>
       <el-form-item label="性别" prop="gender">
         <el-radio v-model="tempData.gender" label="male">男</el-radio>
@@ -589,18 +638,18 @@ export default {
         <el-button @click="updateDialogFormVisible = false">取消</el-button>
       </el-form-item>
     </el-form>
-    <el-form label-width="100px" :model="tempData" v-if="doctorDetailForm" :rules="updateRules">
-      <el-form-item label="姓名" prop="username">
-        <el-input v-model="tempData?.user.username"></el-input>
+    <el-form label-width="100px" ref="updateForm" :model="tempData" v-if="doctorDetailForm" :rules="updateRules">
+      <el-form-item label="姓名" prop="user.username">
+        <el-input v-model="tempData.user.username"></el-input>
       </el-form-item>
       <!--<el-form-item label="密码" prop="password">-->
       <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
       <!--</el-form-item>-->
-      <el-form-item label="邮件" prop="email">
-        <el-input v-model="tempData?.user.email"></el-input>
+      <el-form-item label="邮件" prop="user.email">
+        <el-input v-model="tempData.user.email"></el-input>
       </el-form-item>
-      <el-form-item label="电话" prop="phoneNumber">
-        <el-input v-model="tempData?.user.phoneNumber"></el-input>
+      <el-form-item label="电话" prop="user.phoneNumber">
+        <el-input v-model="tempData.user.phoneNumber"></el-input>
       </el-form-item>
       <el-form-item label="性别" prop="gender">
         <el-radio v-model="tempData.gender" label="male">男</el-radio>
@@ -623,18 +672,18 @@ export default {
         <el-button @click="updateDialogFormVisible = false">取消</el-button>
       </el-form-item>
     </el-form>
-    <el-form label-width="100px" :model="tempData" v-if="adminDetailForm" :rules="updateRules">
-      <el-form-item label="姓名" prop="username">
-        <el-input v-model="tempData?.user.username"></el-input>
+    <el-form label-width="100px" ref="updateForm" :model="tempData" v-if="adminDetailForm" :rules="updateRules">
+      <el-form-item label="姓名" prop="user.username">
+        <el-input v-model="tempData.user.username"></el-input>
       </el-form-item>
       <!--<el-form-item label="密码" prop="password">-->
       <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
       <!--</el-form-item>-->
-      <el-form-item label="邮件" prop="email">
-        <el-input v-model="tempData?.user.email"></el-input>
+      <el-form-item label="邮件" prop="user.email">
+        <el-input v-model="tempData.user.email"></el-input>
       </el-form-item>
-      <el-form-item label="电话" prop="phoneNumber">
-        <el-input v-model="tempData?.user.phoneNumber"></el-input>
+      <el-form-item label="电话" prop="user.phoneNumber">
+        <el-input v-model="tempData.user.phoneNumber"></el-input>
       </el-form-item>
       <el-form-item label="管理等级" prop="adminLevel">
         <el-select v-model="tempData.adminLevel" placeholder="请选择">
@@ -652,6 +701,19 @@ export default {
       <el-form-item>
         <el-button type="primary" @click="updateUserRequest">提交</el-button>
         <el-button @click="updateDialogFormVisible = false">取消</el-button>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
+
+  <!--修改密码界面-->
+  <el-dialog title="修改密码" :visible.sync="changePassDialogFormVisible" width="30%" >
+    <el-form label-width="100px" ref="changePassForm" :model="changePassForm" :rules="updateRules">
+      <el-form-item label="新密码" prop="newPassword">
+        <el-input v-model="changePassForm.newPassword" autocomplete="off" show-password></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="changePassRequest">提交</el-button>
+        <el-button @click="changePassDialogFormVisible = false">取消</el-button>
       </el-form-item>
     </el-form>
   </el-dialog>

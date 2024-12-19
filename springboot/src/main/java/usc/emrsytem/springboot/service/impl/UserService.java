@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import usc.emrsytem.springboot.controller.dto.LoginDTO;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
+import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
 import usc.emrsytem.springboot.entity.Admin;
 import usc.emrsytem.springboot.entity.Doctor;
@@ -242,6 +243,16 @@ public class UserService implements IUserService {
         return loginDTO;
     }
 
+    // 修改密码
+    @Override
+    public void changePassword(PasswordRequest request) {
+        // 新密码加密
+        request.setNewPassword(PasswordUtil.encode(request.getNewPassword()));
 
+        int count = userMapper.updatePassword(request);
+        if (count <= 0) {
+            throw new ServiceException("修改密码失败");
+        }
+    }
 
 }

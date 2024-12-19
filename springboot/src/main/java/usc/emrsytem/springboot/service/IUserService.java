@@ -2,6 +2,7 @@ package usc.emrsytem.springboot.service;
 
 import usc.emrsytem.springboot.controller.dto.LoginDTO;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
+import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
 import usc.emrsytem.springboot.entity.Admin;
 import usc.emrsytem.springboot.entity.Doctor;
@@ -35,4 +36,6 @@ public interface IUserService {
     LoginDTO login(LoginRequest loginRequest);
 
     User getById(Integer integer);
+
+    void changePassword(PasswordRequest request);
 }

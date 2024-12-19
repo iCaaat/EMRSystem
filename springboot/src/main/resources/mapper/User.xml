@@ -234,4 +234,7 @@
     <update id="updateLastLoginTime">
         UPDATE user SET last_login_at = #{lastLoginAt} WHERE user_id = #{userId};
     </update>
+    <update id="updatePassword">
+        update user set password = #{newPassword} where phone_number = #{phoneNumber};
+    </update>
 </mapper>

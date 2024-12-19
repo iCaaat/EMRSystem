@@ -3,7 +3,9 @@ package usc.emrsytem.springboot.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import usc.emrsytem.springboot.common.Result;
+import usc.emrsytem.springboot.controller.dto.LoginDTO;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
+import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
 import usc.emrsytem.springboot.entity.Admin;
 import usc.emrsytem.springboot.entity.Doctor;
@@ -104,4 +106,12 @@ public class UserController {
     public Result Login(@RequestBody LoginRequest loginRequest) {
         return Result.success(userService.login(loginRequest));
     }
+
+    // 修改密码
+    @PutMapping("/updatePassword")
+    public Result password(@RequestBody PasswordRequest request) {
+        userService.changePassword(request);
+        return Result.success();
+    }
+
 }
