@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import usc.emrsytem.springboot.mapper.DoctorPatientMapper;
 import usc.emrsytem.springboot.mapper.UserMapper;
+import usc.emrsytem.springboot.service.IDoctorPatientService;
 import usc.emrsytem.springboot.service.impl.UserService;
 
 @SpringBootTest
@@ -15,74 +16,14 @@ class SpringbootApplicationTests {
     private UserService userService;
 	@Autowired
 	private DoctorPatientMapper doctorPatientMapper;
+	@Autowired
+	private IDoctorPatientService doctorPatientService;
 
 //	@Test
-//	public void addUser() {
-//		//测试添加用户
-//		User user = new User();
-//		user.setUsername("李四");
-//		user.setPassword("123456");
-//		user.setRole("patient");
-//		user.setEmail("zhangsan@usc.edu");
-//		user.setPhoneNumber("1234567891");
-//		userMapper.addUser(user);
-//	}
-
-//	@Test
-//	public void addPatient() {
-//		//测试添加患者
-//		Patient patient = new Patient();
-//		Date dateOfBirth = new Date(1990, 1, 1);
-//		patient.setUserId(2003);
-//		patient.setAddress("123 Main St");
-//		patient.setAllergies("None");
-//		patient.setContactPhone("1234567892");
-//		patient.setGender("male");
-//		patient.setDateOfBirth(dateOfBirth);
-//		patient.setEmergencyContact("John Doe");
-//		patient.setMedicalHistory("None");
-//		userMapper.addPatient(patient);
-//	}
-
-//	@Test
-//	public void listDoctors() {
-//		//测试查询医生
-//		List<Doctor> doctors = userMapper.listDoctorUsers();
-//		for (Doctor doctor : doctors) {
-//			System.out.println(doctor);
-//		}
-//	}
-//	@Test
-//	public void listAdmins() {
-//		//测试查询医生
-//		List<Admin> admins = userMapper.listAdminUsers();
-//		for (Admin admin : admins) {
-//			System.out.println(admin);
-//		}
-//	}
-
-//	@Test
-//	public void getById() {
-//		Integer id = 2026;
-//		System.out.println(userService.getById(id));
-//		System.out.println(userMapper.getUserId(id));
-//	}
-
-//	@Test
-//	public void addDoctorPatient() {
-//		Integer doctorId = 3;
-//		Integer patientId = 8;
-//		doctorPatientMapper.addDoctorPatient(doctorId, patientId);
-//	}
-
-//	@Test
-//	public void getDoctorById() {
-//		Integer userId = 2023;
-//		System.out.println(userService.getDoctorById(userId));
-//	}
-//	@Test
-//	public void getPatientById() {
-//		Integer userId = 2022;
-//		System.out.println(userMapper.getPatientById(userId));
+//	public void deleteByUserId() {
+//		DocAndPatRequest docAndPatRequest = new DocAndPatRequest();
+//		docAndPatRequest.setDoctorUserId(2030);
+//		docAndPatRequest.setPatientUserId(2022);
+//		doctorPatientService.deleteByUserId(docAndPatRequest);
 //	}
 }

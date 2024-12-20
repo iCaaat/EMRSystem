@@ -16,6 +16,7 @@ import usc.emrsytem.springboot.entity.Doctor;
 import usc.emrsytem.springboot.entity.Patient;
 import usc.emrsytem.springboot.entity.User;
 import usc.emrsytem.springboot.exception.ServiceException;
+import usc.emrsytem.springboot.mapper.DoctorPatientMapper;
 import usc.emrsytem.springboot.mapper.UserMapper;
 import usc.emrsytem.springboot.service.IUserService;
 import usc.emrsytem.springboot.utils.PasswordUtil;
@@ -30,6 +31,8 @@ import java.util.Objects;
 public class UserService implements IUserService {
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    DoctorPatientMapper doctorPatientMapper;
 
     //查询所有用户
     @Override
@@ -164,6 +167,9 @@ public class UserService implements IUserService {
             case "管理员" -> user.setRole("admin");
         }
 
+        if(Objects.equals(user.getRole(), "patient")) {
+            doctorPatientMapper.deleteByPatientUserId(user.getUserId());
+        }
         userMapper.deleteUserByRole(user);
         userMapper.deleteFromUser(user);
         return 0;

@@ -366,6 +366,8 @@ export default {
               type: 'success',
               message: '删除成功!'
             });
+          } else {
+            this.$message.error(res.msg);
           }
           this.load();
         })

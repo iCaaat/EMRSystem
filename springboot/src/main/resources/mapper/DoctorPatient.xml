@@ -4,10 +4,28 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="usc.emrsytem.springboot.mapper.DoctorPatientMapper">
+    <!--添加-->
     <insert id="addDoctorPatient">
         insert into doctor_patient (doctor_id, patient_id) values (#{doctorId}, #{patientId})
     </insert>
+
+
+    <!--查询-->
     <select id="getByDocAndPatId" resultType="usc.emrsytem.springboot.entity.DoctorPatient">
         select * from doctor_patient where doctor_id = #{doctorId} and patient_id = #{patientId}
     </select>
+    <select id="getByDoctorId" resultType="usc.emrsytem.springboot.entity.DoctorPatient">
+        select * from doctor_patient where doctor_id = #{doctorId}
+    </select>
+    <select id="getByDoctorIdCount" resultType="java.lang.Integer">
+        select count(*) from doctor_patient where doctor_id = #{doctorId}
+    </select>
+
+    <!--删除-->
+    <delete id="deleteByUserId">
+        delete from doctor_patient where doctor_id = #{doctorId} and patient_id = #{patientId}
+    </delete>
+    <delete id="deleteByPatientUserId">
+        delete from doctor_patient where patient_id = #{patientId}
+    </delete>
 </mapper>

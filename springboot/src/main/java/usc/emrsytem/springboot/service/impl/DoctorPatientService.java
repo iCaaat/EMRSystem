@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import usc.emrsytem.springboot.controller.request.DoctorPatientRequest;
+import usc.emrsytem.springboot.entity.DoctorPatient;
 import usc.emrsytem.springboot.exception.ServiceException;
 import usc.emrsytem.springboot.mapper.DoctorPatientMapper;
 import usc.emrsytem.springboot.mapper.UserMapper;
@@ -41,5 +42,33 @@ public class DoctorPatientService implements IDoctorPatientService {
         }
 
         return 0;
+    }
+
+    @Override
+    public List<DoctorPatient> getByUserId(Integer userId) {
+        if (userMapper.getDoctorById(userId) == null)
+            throw new ServiceException("用户非医生");
+        Integer doctorId = userMapper.getDoctorById(userId).getDoctorId();
+        return doctorPatientMapper.getByDoctorId(doctorId);
+    }
+
+    @Override
+    public int deleteByUserId(Integer doctorUserId, Integer patientUserId) {
+        if(userMapper.getDoctorById(doctorUserId) == null || userMapper.getPatientById(patientUserId) == null) {
+            throw new ServiceException("用户不存在");
+        }
+        Integer doctorId = userMapper.getDoctorById(doctorUserId).getDoctorId();
+        Integer patientId = userMapper.getPatientById(patientUserId).getPatientId();
+
+        return doctorPatientMapper.deleteByUserId(doctorId, patientId);
+    }
+
+    @Override
+    public int deleteByPatientUserId(Integer patientUserId) {
+        if(userMapper.getPatientById(patientUserId) == null) {
+            throw new ServiceException("用户不存在");
+        }
+        Integer patientId = userMapper.getPatientById(patientUserId).getPatientId();
+        return doctorPatientMapper.deleteByPatientUserId(patientId);
     }
 }
