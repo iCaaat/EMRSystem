@@ -19,7 +19,6 @@ export default {
       params: {
         username: '',
         phoneNumber: '',
-        role: '',
         email: '',
         pageSize: 13,
         pageNum: 1
@@ -128,10 +127,12 @@ export default {
     // 获取患者信息
     loadPatients() {
       request.get('/user/patient', {params: this.params}).then(res => {
-        // console.log("res:" + JSON.stringify(res, null, 2))
+
         if (res.code === '200') {
           this.patientData = res.data
           // console.log(JSON.stringify(this.patientData))
+        } else {
+          this.$message.error(res.msg)
         }
       })
     },

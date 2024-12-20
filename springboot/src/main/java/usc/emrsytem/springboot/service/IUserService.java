@@ -16,7 +16,7 @@ public interface IUserService {
     // 查询
     List<User> userList();// 查询所有用户
     Object page(UserPageRequest userPageRequest);// 分页条件查询
-    List<Patient> patientList();// 查询所有患者
+    Object patientList(UserPageRequest userPageRequest);// 查询所有患者
     List<Doctor> doctorList();// 查询所有医生
     List<Admin> adminList();// 查询所有管理员
     Doctor getDoctorById(Integer userId);// 根据id查询医生

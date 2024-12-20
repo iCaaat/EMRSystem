@@ -33,9 +33,9 @@ public class UserController {
         return Result.success(userService.page(userPageRequest));
     }
     @GetMapping("/patient")
-    public Result patientList(){
-        List<Patient> patients = userService.patientList();
-        return Result.success(patients);
+    public Result patientList(UserPageRequest userPageRequest){
+        userService.patientList(userPageRequest);
+        return Result.success(userService.patientList(userPageRequest));
     }
     @GetMapping("/doctor")
     public Result doctorList(){

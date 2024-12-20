@@ -69,8 +69,21 @@
         </association>
     </resultMap>
     <select id="listPatientUsers" resultMap="patientResultMap">
-        select p.*, u.* from patient p inner join user u on p.user_id = u.user_id where u.role = 'patient'
+        select p.*, u.* from patient p inner join user u on p.user_id = u.user_id
+        <where>
+            and u.role = 'patient' <!-- 固定条件 -->
+            <if test="username != null and username != ''">
+                and u.username like concat('%', #{username}, '%')
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                and u.phone_number like concat('%', #{phoneNumber}, '%')
+            </if>
+            <if test="email != null and email != ''">
+                and u.email like concat('%', #{email}, '%')
+            </if>
+        </where>
     </select>
+
     <resultMap id="doctorResultMap" type="usc.emrsytem.springboot.entity.Doctor">
         <!--doctor表字段映射-->
         <id column="doctor_id" property="doctorId" />

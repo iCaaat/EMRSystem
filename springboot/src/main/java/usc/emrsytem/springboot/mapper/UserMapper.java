@@ -25,7 +25,7 @@ public interface UserMapper {
     // 根据条件查询用户
     List<User> listByCondition(UserPageRequest userPageRequest);
     // 查询所有角色为患者的用户
-    List<Patient> listPatientUsers();
+    List<Patient> listPatientUsers(UserPageRequest userPageRequest);
     // 查询所有角色为医生的用户
     List<Doctor> listDoctorUsers();
     // 查询所有角色为管理员的用户
@@ -69,7 +69,7 @@ public interface UserMapper {
     int updateLastLoginTime(User user);
 
     @Select("select * from users where username=#{username}")
-    public List<User> selectByUsername(String username);
+    List<User> selectByUsername(String username);
 
 
     int updatePassword(PasswordRequest passwordRequest);

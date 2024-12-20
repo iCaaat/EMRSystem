@@ -52,8 +52,14 @@ public class UserService implements IUserService {
     }
     // 查询所有患者信息
     @Override
-    public List<Patient> patientList() {
-        return userMapper.listPatientUsers();
+    public Object patientList(UserPageRequest userPageRequest) {
+        try {
+            PageHelper.startPage(userPageRequest.getPageNum(), userPageRequest.getPageSize());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        List<Patient> patients = userMapper.listPatientUsers(userPageRequest);
+        return new PageInfo<>(patients);
     }
     // 查询所有医生信息
     @Override

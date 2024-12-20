@@ -17,7 +17,6 @@ export default {
       params: {
         username: '',
         phoneNumber: '',
-        role: '',
         email: '',
         pageSize: 13,
         pageNum: 1
@@ -67,8 +66,10 @@ export default {
       request.get('/user/patient', {params: this.params}).then(res => {
         // console.log("res:" + JSON.stringify(res, null, 2))
         if (res.code === '200') {
-          this.patientTableData = res.data
+          this.patientTableData = res.data.list
           // console.log(JSON.stringify(this.patientTableData))
+        } else {
+          this.$message.error(res.msg)
         }
       })
     },
@@ -174,21 +175,26 @@ export default {
   <div class="page-container">
     <!-- 医生选择 -->
     <div class="section">
-      <el-select
-          @change="confirmDoctor = false"
-          v-model="doctorValue"
-          filterable
-          placeholder="请选择医生"
-          class="select-box"
-      >
-        <el-option
-            v-for="item in doctorOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-        ></el-option>
-      </el-select>
-      <el-button type="primary" @click="confirmDoc">确定医生</el-button>
+      <el-form>
+        <el-form-item label="选择医生：">
+          <el-select
+              @change="confirmDoctor = false"
+              v-model="doctorValue"
+              filterable
+              placeholder="请选择医生"
+              class="select-box"
+          >
+            <el-option
+                v-for="item in doctorOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            ></el-option>
+          </el-select>
+          <el-button type="primary" @click="confirmDoc">确定医生</el-button>
+        </el-form-item>
+      </el-form>
+
     </div>
 
     <!-- 医生表格 -->
@@ -208,22 +214,27 @@ export default {
 
     <!-- 患者选择 -->
     <div v-if="confirmDoctor" class="section">
-      <el-select
-          v-model="patientValue"
-          multiple
-          filterable
-          @change="selectPatient"
-          placeholder="请选择患者"
-          class="select-box"
-      >
-        <el-option
-            v-for="item in patientOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-        ></el-option>
-      </el-select>
-      <el-button type="primary" @click="confirmAdd">添加患者</el-button>
+      <el-form>
+        <el-form-item label="选择患者：">
+          <el-select
+              v-model="patientValue"
+              multiple
+              filterable
+              @change="selectPatient"
+              placeholder="请选择患者"
+              class="select-box"
+          >
+            <el-option
+                v-for="item in patientOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            ></el-option>
+          </el-select>
+          <el-button type="primary" @click="confirmAdd">添加患者</el-button>
+        </el-form-item>
+      </el-form>
+
     </div>
 
     <!-- 患者表格 -->

@@ -56,6 +56,11 @@ const routes = [
         path: 'BindPatientAndDoctor',
         name: 'BindPatientAndDoctor',
         component: () => import('@/views/MedicalRecord/BindPatientAndDoctor.vue')
+      },
+      {
+        path: 'AddMedicalRecord',
+        name: 'AddMedicalRecord',
+        component: () => import('@/views/MedicalRecord/AddMedicalRecord.vue')
       }
     ]
   },

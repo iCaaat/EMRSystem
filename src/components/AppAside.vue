@@ -67,9 +67,9 @@ export default {
             <i class="el-icon-notebook-2"></i>
             <span slot="title">查询病历</span>
           </el-menu-item>
-          <el-menu-item index="3-3">
-            <i class="el-icon-edit-outline"></i>
-            <span slot="title">管理病历</span>
+          <el-menu-item index="3-3" :route="{path: '/AddMedicalRecord'}">
+            <i class="el-icon-plus"></i>
+            <span slot="title">新增病历</span>
           </el-menu-item>
           <el-menu-item index="3-4" :route="{path: '/BindPatientAndDoctor'}">
             <i class="el-icon-edit-outline"></i>

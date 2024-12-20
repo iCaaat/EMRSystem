@@ -33,7 +33,7 @@ export default {
   methods: {
     load() {
       request.get('/user/page', {params: this.params}).then(res => {
-        // console.log("res:" + JSON.stringify(res, null, 2))
+
         if (res.code === '200') {
           this.tableData = res.data.list
           this.total = res.data.total
@@ -45,9 +45,9 @@ export default {
     // 获取患者信息
     loadPatients() {
       request.get('/user/patient', {params: this.params}).then(res => {
-        // console.log("res:" + JSON.stringify(res, null, 2))
+        console.log(res)
         if (res.code === '200') {
-          this.patientData = res.data
+          this.patientData = res.data.list
           this.loadRelation()
           // console.log(JSON.stringify(this.patientData))
         }
@@ -142,7 +142,21 @@ export default {
         }
         return patient;
       });
-    }
+    },
+    reset() {
+      this.params = {
+        username: '',
+        phoneNumber: '',
+        pageSize: 13,
+        pageNum: 1
+      }
+      this.load()
+    },
+    // 处理分页
+    handleCurrentPageChange(pageNum) {
+      this.params.pageNum = pageNum
+      this.loadPatients()
+    },
   }
 }
 </script>
@@ -151,6 +165,16 @@ export default {
 <div>
   <h2>名下患者</h2>
   <!-- 表格 -->
+  <!-- 搜索表单 -->
+  <div style="margin-bottom: 20px">
+    <el-input style="width: 240px;" placeholder="输入名称" v-model="params.username" ></el-input>
+    <el-input style="width: 240px; margin-left: 5px;" placeholder="请输入电话" v-model="params.phoneNumber"></el-input>
+    <el-input style="width: 240px; margin-left: 5px;" placeholder="请输入邮件" v-model="params.email"></el-input>
+    <el-button style="margin-left: 5px;" type="primary" @click="loadPatients"><i class="el-icon-search"></i>搜索</el-button>
+    <el-button style="margin-left: 5px;" type="warning" @click="reset"><i class="el-icon-refresh"></i>重置</el-button>
+  </div>
+
+  <!--表格-->
   <el-table :data="assignedPatientsShow" stripe border>
     <el-table-column
         type="index"
@@ -173,6 +197,18 @@ export default {
     </el-table-column>
   </el-table>
 
+  <!--分页条-->
+  <!-- 分页 -->
+  <div style="margin-top: 20px">
+    <el-pagination
+        background
+        :current-page="params.pageNum"
+        :page-size="params.pageSize"
+        layout="prev, pager, next"
+        @current-change="handleCurrentPageChange"
+        :total="total">
+    </el-pagination>
+  </div>
 </div>
 </template>
 
