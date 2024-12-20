@@ -32,6 +32,7 @@ export default {
           this.tableData = res.data.list
           this.total = res.data.total
           // console.log(JSON.stringify(this.tableData))
+          // this.loadRelation()
         }
       })
     },
@@ -45,6 +46,12 @@ export default {
         }
       })
     },
+    // 获取医患关系信息
+    loadRelation() {
+      request({
+        url: '/'
+      })
+    }
   }
 }
 </script>

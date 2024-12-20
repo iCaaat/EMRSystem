@@ -13,7 +13,7 @@ public class DoctorPatientController {
     @Autowired
     IDoctorPatientService doctorPatientService;
 
-    @PutMapping
+    @PutMapping("/add")
     public Result addDoctorPatient(@RequestBody DoctorPatientRequest doctorPatientRequest){
         doctorPatientService.addDoctorPatient(doctorPatientRequest);
         return Result.success();

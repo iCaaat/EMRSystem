@@ -12,7 +12,7 @@ export default {
       doctorTableData: [],
       userData: [],
       selectedDoctor: [],
-      selectedPatient: [],
+      selectedPatients: [],
       total: 0,
       params: {
         username: '',
@@ -126,7 +126,7 @@ export default {
       console.log(patientValues)
       // 发送医生的userId和病人的id数组给后端
       request({
-        url: '/DoctorPatient',
+        url: '/DoctorPatient/add',
         method: 'put',
         data: {
           doctorValue: this.doctorValue,
@@ -141,6 +141,29 @@ export default {
         }
         this.load()
       })
+    },
+    selectPatient() {
+      const numericArray = this.patientValue.map(item => parseInt(item, 10));
+      // console.log(numericArray)
+      this.selectedPatients = this.patientTableData.filter(item =>
+          numericArray.includes(item.userId)
+      );
+      const currentDate = new Date(); // 当前日期
+      this.selectedPatients = this.selectedPatients.map(patient => {
+        if (patient.dateOfBirth) {
+          const birthDate = new Date(patient.dateOfBirth); // 解析出生日期
+          const age = currentDate.getFullYear() - birthDate.getFullYear();
+          const isBirthdayPassed =
+              currentDate.getMonth() > birthDate.getMonth() ||
+              (currentDate.getMonth() === birthDate.getMonth() &&
+                  currentDate.getDate() >= birthDate.getDate());
+          // 如果生日还没过，则年龄减一
+          patient.age = isBirthdayPassed ? age : age - 1;
+        } else {
+          patient.age = null; // 如果没有 dateOfBirth，则设置为 null 或其他默认值
+        }
+        return patient;
+      });
     }
   }
 
@@ -148,69 +171,108 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div>
+  <div class="page-container">
+    <!-- 医生选择 -->
+    <div class="section">
       <el-select
           @change="confirmDoctor = false"
           v-model="doctorValue"
           filterable
           placeholder="请选择医生"
-          style="width: 300px; margin: 10px">
+          class="select-box"
+      >
         <el-option
             v-for="item in doctorOptions"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-        </el-option>
+            :value="item.value"
+        ></el-option>
       </el-select>
-      <el-button @click="confirmDoc">确定医生</el-button>
+      <el-button type="primary" @click="confirmDoc">确定医生</el-button>
     </div>
-    <div>
+
+    <!-- 医生表格 -->
+    <div class="section">
       <el-table
           v-if="confirmDoctor"
           :data="selectedDoctor"
-          style="width: 80%">
-        <el-table-column
-            prop="userId"
-            label="用户ID">
-        </el-table-column>
-        <el-table-column
-            prop="user.username"
-            label="医生姓名"
-            width="auto">
-        </el-table-column>
-        <el-table-column
-            prop="department"
-            label="部门"
-            width="auto">
-        </el-table-column>
-        <el-table-column
-            prop="specialty"
-            label="专业领域"
-            width="auto">
-        </el-table-column>
+          class="table"
+      >
+        <el-table-column prop="userId" label="用户ID"></el-table-column>
+        <el-table-column prop="user.username" label="医生姓名"></el-table-column>
+        <el-table-column prop="department" label="部门"></el-table-column>
+        <el-table-column prop="specialty" label="专业领域"></el-table-column>
+        <el-table-column prop="experienceYears" label="从业年限（年）"></el-table-column>
       </el-table>
     </div>
-    <div v-if="confirmDoctor">
+
+    <!-- 患者选择 -->
+    <div v-if="confirmDoctor" class="section">
       <el-select
           v-model="patientValue"
           multiple
           filterable
+          @change="selectPatient"
           placeholder="请选择患者"
-          style="width: 300px; margin: 10px">
+          class="select-box"
+      >
         <el-option
             v-for="item in patientOptions"
             :key="item.value"
             :label="item.label"
-            :value="item.value">
-        </el-option>
+            :value="item.value"
+        ></el-option>
       </el-select>
       <el-button type="primary" @click="confirmAdd">添加患者</el-button>
     </div>
 
+    <!-- 患者表格 -->
+    <div v-if="confirmDoctor" class="section">
+      <el-table
+          :data="selectedPatients"
+          class="table"
+      >
+        <el-table-column prop="userId" label="用户ID"></el-table-column>
+        <el-table-column prop="user.username" label="患者姓名"></el-table-column>
+        <el-table-column prop="gender" label="性别"></el-table-column>
+        <el-table-column prop="age" label="患者年龄（岁）"></el-table-column>
+        <el-table-column prop="medicalHistory" label="患者用药历史"></el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 水平居中 */
+  background-color: rgba(255, 255, 255, 0.8); /* 半透明背景 */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
+.section {
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+.action-group {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;
+  gap: 10px; /* 控件之间的间距 */
+}
+
+.select-box {
+  width: 300px;
+}
+
+.table {
+  width: 100%;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.9); /* 表格背景更浅 */
+  overflow: hidden;
+}
 </style>
