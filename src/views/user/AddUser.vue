@@ -124,27 +124,27 @@ export default {
 </script>
 
 <template>
-  <div>
-    <h3>添加用户</h3>
+  <div class="container">
+    <h2 class="title">添加用户</h2>
     <el-form ref="form"
              :model="form"
              label-width="100px"
              class="form-layout"
              :rules="rules">
-      <el-form-item label="姓名" prop="username">
-        <el-input v-model="form.username" placeholder="请输入姓名"></el-input>
+      <el-form-item label="姓名" prop="username" class="form-item">
+        <el-input v-model="form.username" placeholder="请输入姓名" class="input-box"></el-input>
       </el-form-item>
-      <el-form-item label="密码" prop="password">
-        <el-input v-model="form.password" placeholder="请输入密码" show-password></el-input>
+      <el-form-item label="密码" prop="password" class="form-item">
+        <el-input v-model="form.password" placeholder="请输入密码" show-password class="input-box"></el-input>
       </el-form-item>
-      <el-form-item label="邮件" prop="email">
-        <el-input v-model="form.email" placeholder="请输入邮件"></el-input>
+      <el-form-item label="邮件" prop="email" class="form-item">
+        <el-input v-model="form.email" placeholder="请输入邮件" class="input-box"></el-input>
       </el-form-item>
-      <el-form-item label="电话" prop="phoneNumber">
-        <el-input v-model="form.phoneNumber" placeholder="请输入电话"></el-input>
+      <el-form-item label="电话" prop="phoneNumber" class="form-item">
+        <el-input v-model="form.phoneNumber" placeholder="请输入电话" class="input-box"></el-input>
       </el-form-item>
-      <el-form-item label="角色" prop="role">
-        <el-select v-model="form.role" placeholder="请选择角色">
+      <el-form-item label="角色" prop="role" class="form-item">
+        <el-select v-model="form.role" placeholder="请选择角色" class="select-box">
           <el-option label="医生" value="doctor"></el-option>
           <el-option label="病人" value="patient"></el-option>
           <el-option label="管理员" value="admin"></el-option>
@@ -166,12 +166,58 @@ export default {
 </template>
 
 <style scoped>
-/* 定义表单布局 */
-.form-layout {
-  gap: 20px; /* 每行之间的间距 */
+/* 容器样式 */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.el-form-item {
-  max-width: 1200px;
+/* 标题样式 */
+
+
+/* 表单项样式 */
+.form-item {
+  margin-bottom: 20px;
+}
+
+/* 输入框样式 */
+.input-box,
+.select-box {
+  width: 100%;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+/* 按钮样式 */
+.el-button {
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+/* 修改文本框宽度 */
+.el-input__inner {
+  padding: 10px;
+}
+
+/* 设置文本框为多行 */
+.el-input__inner::placeholder {
+  color: #bbb;
+  font-size: 1rem;
+}
+
+/* 控制按钮间距 */
+.el-button {
+  margin-top: 20px;
+}
+
+/* 调整表单的宽度 */
+.el-form {
+  width: 100%;
 }
 </style>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="usc.emrsytem.springboot.mapper.PrescriptionMapper">
+
+    <!--添加-->
+    <insert id="addPrescription">
+        insert into prescription (doctor_id, medication_name, dosage, frequency, duration, instructions, remarks)
+        values (#{doctorId}, #{medicationName}, #{dosage}, #{frequency}, #{duration}, #{instructions}, #{remarks})
+    </insert>
+
+    <!--查询-->
+    <select id="listPrescription" resultType="usc.emrsytem.springboot.entity.Prescription">
+        select * from prescription
+        <where>
+        <if test="doctorId != null and doctorId != ''">
+            doctor_id like concat('%', #{doctorId}, '%')
+        </if>
+        <if test="medicationName != null and medicationName != ''">
+            and medication_name like concat('%', #{medicationName}, '%')
+        </if>
+        <if test="remarks != null and remarks != ''">
+            and remarks like concat('%', #{remarks}, '%')
+        </if>
+        </where>
+    </select>
+</mapper>

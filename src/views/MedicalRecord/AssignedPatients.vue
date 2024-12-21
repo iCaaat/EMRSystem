@@ -162,8 +162,8 @@ export default {
 </script>
 
 <template>
-<div>
-  <h2>名下患者</h2>
+<div class="container">
+  <h2 class="tittle">名下患者</h2>
   <!-- 表格 -->
   <!-- 搜索表单 -->
   <div style="margin-bottom: 20px">

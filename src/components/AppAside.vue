@@ -81,10 +81,22 @@ export default {
         <i class="el-icon-sugar"></i>
         <span slot="title">药品管理</span>
       </el-menu-item>
-      <el-menu-item index="5">
-        <i class="el-icon-tickets"></i>
-        <span slot="title">处方管理</span>
-      </el-menu-item>
+      <el-submenu index="5">
+        <template slot="title">
+          <i class="el-icon-s-management"></i>
+          <span>处方管理</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="5-1" :route="{path:'/ViewPrescription'}">
+            <i class="el-icon-user"></i>
+            <span slot="title">查询处方</span>
+          </el-menu-item>
+          <el-menu-item index="5-2" :route="{path:'/AddPrescription'}">
+            <i class="el-icon-notebook-2"></i>
+            <span slot="title">新增处方</span>
+          </el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
       <el-submenu index="6">
         <template slot="title">
           <i class="el-icon-chat-square"></i>
