@@ -54,4 +54,10 @@ public class PrescriptionService implements IPrescriptionService {
         List<Prescription> prescriptions = prescriptionMapper.listPrescription(request);
         return new PageInfo<>(prescriptions);
     }
+
+    // 删除
+    @Override
+    public int deletePrescription(Integer prescriptionId) {
+        return prescriptionMapper.deletePrescription(prescriptionId);
+    }
 }

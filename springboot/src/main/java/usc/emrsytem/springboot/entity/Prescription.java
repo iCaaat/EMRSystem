@@ -2,6 +2,8 @@ package usc.emrsytem.springboot.entity;
 
 import lombok.Data;
 
+import java.sql.Timestamp;
+
 @Data
 public class Prescription {
     private Integer prescriptionId;
@@ -12,4 +14,5 @@ public class Prescription {
     private String duration;
     private String instructions;
     private String remarks;
+    private Timestamp createdAt;
 }

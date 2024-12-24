@@ -43,13 +43,12 @@ export default {
     },
     // 处理选项
     generateOptions(data) {
-      const options = data.map( item => {
+      this.doctorOptions = data.map(item => {
         return {
           value: item.doctorId.toString(),
           label: `${item.user.username} Id: ${item.userId}` // 拼接username和userId
         }
       })
-      this.doctorOptions = options
     },
     reset() {
       this.params = {
@@ -61,12 +60,75 @@ export default {
       }
       this.listPrescription()
     },
-    deleteUserRequest() {
+    deleteUserRequest(row) {
+      console.log(row)
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
 
+        request.delete('/prescription/delete/' + row.prescriptionId).then(res => {
+          if (res.code === '200') {
+            this.$message({
+              type: 'success',
+              message: '删除成功!'
+            })
+            this.listPrescription()
+          } else {
+            this.$message({
+              type: 'error',
+              message: '删除失败!'
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     // 处理分页
     handleCurrentPageChange(pageNum) {
       this.params.pageNum = pageNum
+    },
+    // 处理时间格式函数
+    formatDate() {
+      try {
+        for(let i = 0; i < this.prescriptionTable.length; i++) {
+          const date = new Date(this.prescriptionTable[i].createdAt);
+          // 检查时间是否有效
+          if (isNaN(date.getTime())){
+            this.$message.error('时间格式不正确');
+          }
+
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const hours = String(date.getHours()).padStart(2, '0');
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+
+          this.prescriptionTable[i].createdAt = `${year}年${month}月${day}日${hours}:${minutes}`;
+        }
+      } catch (e) {
+        this.$message.error(e)
+      }
+    },
+    // 根据doctorId查询医生姓名插入表中
+    setDoctorName() {
+      // console.log(this.doctorData)
+      try {
+        for (let i=0; i < this.doctorData.length; i++) {
+          for (let j=0; j < this.prescriptionTable.length; j++) {
+            if (this.doctorData[i].doctorId === this.prescriptionTable[j].doctorId) {
+              this.prescriptionTable[j].doctorName = this.doctorData[i].user.username
+            }
+          }
+        }
+      } catch (e) {
+        this.$message.error(e)
+      }
     },
     listPrescription() {
       if(this.doctorId !== '' || this.doctorId !== null) {
@@ -80,6 +142,9 @@ export default {
       }).then(res => {
         if(res.code === '200') {
           this.prescriptionTable = res.data.list
+          this.formatDate()
+          this.setDoctorName()
+          // console.log(this.prescriptionTable)
         } else {
           this.$message.error(res.msg)
         }
@@ -120,7 +185,7 @@ export default {
       <el-table-column prop='duration' label="持续时间" ></el-table-column>
       <el-table-column prop='instructions' label="用药说明" ></el-table-column>
       <el-table-column prop='remarks' label="备注" ></el-table-column>
-      <el-table-column prop='created_at' label="开具时间" ></el-table-column>
+      <el-table-column prop='createdAt' label="开具时间" ></el-table-column>
       <el-table-column label="操作">
         <template v-slot="scoped">
           <el-link type="danger" style="margin: 2px" @click="deleteUserRequest(scoped.row)">删除处方</el-link>

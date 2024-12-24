@@ -39,44 +39,58 @@ export default {
     }
   },
   methods: {
+    reset(){
+      this.form = {}
+    },
     // 提交表单
     onSubmit() {
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          this.form.doctorUserId = this.user.userId
-          if (this.form.dosage === '' || this.form.dosage === undefined) {
-            this.form.dosage = "按说明书进行服用"
-          }
-          if (this.form.frequency === '' || this.form.frequency === undefined) {
-            this.form.frequency = "按说明书进行服用"
-          }
-          if (this.form.duration === '' || this.form.duration === undefined) {
-            this.form.duration = "按说明书进行服用"
-          }
-          if (this.form.instructions === '' || this.form.instructions === undefined) {
-            this.form.instructions = "按说明书进行服用"
-          }
-          if (this.form.remarks === '' || this.form.remarks === undefined) {
-            this.form.remarks = "无"
-          }
-          console.log(this.form)
-          request({
-            url: '/prescription/add',
-            method: 'put',
-            data: this.form
-          }).then(res => {
-            if (res.code === '200') {
-              this.$message.success("新增成功");
-            } else {
-              this.$message.error(res.msg)
+      this.$confirm('确认新增处方吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$refs.form.validate(valid => {
+          if (valid) {
+            this.form.doctorUserId = this.user.userId
+            if (this.form.dosage === '' || this.form.dosage === undefined) {
+              this.form.dosage = "按说明书进行服用"
             }
-          })
-        } else {
-          // 表单验证未通过
-          this.$message.error("未填写必须信息");
-        }
+            if (this.form.frequency === '' || this.form.frequency === undefined) {
+              this.form.frequency = "按说明书进行服用"
+            }
+            if (this.form.duration === '' || this.form.duration === undefined) {
+              this.form.duration = "按说明书进行服用"
+            }
+            if (this.form.instructions === '' || this.form.instructions === undefined) {
+              this.form.instructions = "按说明书进行服用"
+            }
+            if (this.form.remarks === '' || this.form.remarks === undefined) {
+              this.form.remarks = "无"
+            }
+            console.log(this.form)
+            request({
+              url: '/prescription/add',
+              method: 'put',
+              data: this.form
+            }).then(res => {
+              if (res.code === '200') {
+                this.$message.success("新增成功");
+                this.form = {}
+              } else {
+                this.$message.error(res.msg)
+              }
+            })
+          } else {
+            // 表单验证未通过
+            this.$message.error("未填写必须信息");
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
       })
-
     }
 
   }
@@ -116,7 +130,7 @@ export default {
 
       <el-form-item class="form-item">
         <el-button type="primary" @click="onSubmit">立即创建</el-button>
-        <el-button>取消</el-button>
+        <el-button @click="reset">重置</el-button>
       </el-form-item>
     </el-form>
   </div>

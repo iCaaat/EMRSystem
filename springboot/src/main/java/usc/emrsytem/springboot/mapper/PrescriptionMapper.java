@@ -12,4 +12,6 @@ public interface PrescriptionMapper {
     int addPrescription(Prescription prescription);
 
     List<Prescription> listPrescription(PrescriptionRequest request);
+
+    int deletePrescription(Integer prescriptionId);
 }

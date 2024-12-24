@@ -26,4 +26,9 @@
         </if>
         </where>
     </select>
+
+    <!--删除-->
+    <delete id="deletePrescription">
+        delete from prescription where prescription_id = #{prescriptionId}
+    </delete>
 </mapper>

@@ -27,4 +27,11 @@ public class PrescriptionController {
     public Result prescriptionList(PrescriptionRequest params){
         return Result.success(prescriptionService.listPrescription(params));
     }
+
+    // 删除
+    @DeleteMapping("/delete/{id}")
+    public Result deletePrescription(@PathVariable Integer id){
+        prescriptionService.deletePrescription(id);
+        return Result.success();
+    }
 }

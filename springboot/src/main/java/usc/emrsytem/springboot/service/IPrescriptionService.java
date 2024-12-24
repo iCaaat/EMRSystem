@@ -9,4 +9,6 @@ public interface IPrescriptionService {
 
     // 查询处方（包括模糊查询）
     Object listPrescription(PrescriptionRequest request);
+
+    int deletePrescription(Integer prescriptionId);
 }
