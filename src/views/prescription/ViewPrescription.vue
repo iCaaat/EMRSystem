@@ -51,6 +51,7 @@ export default {
       })
     },
     reset() {
+      this.doctorId = null;
       this.params = {
         doctorId: '',
         medicationName: '',
@@ -131,6 +132,7 @@ export default {
       }
     },
     listPrescription() {
+      // console.log(this.doctorId)
       if(this.doctorId !== '' || this.doctorId !== null) {
         this.params.doctorId = this.doctorId
       }
