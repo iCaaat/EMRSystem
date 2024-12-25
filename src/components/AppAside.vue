@@ -5,7 +5,8 @@ export default {
     return {
       isCollapse: false,
       showLeftButton: true, // 默认显示左侧按钮
-      thisWidth: 0
+      thisWidth: 0,
+      openMenu: ['1', '2', '3', '4', '5', '6', '7', '8']
     };
   },
   methods: {
@@ -27,17 +28,18 @@ export default {
 <template>
   <div :style="{ width: width + 'px' }" ref="asideContainer">
     <el-menu
-        default-active="1-4-1"
+        default-active="1"
         class="el-menu-vertical-demo"
         :collapse="isCollapse"
         collapse-transition
         style="flex: 0 0 auto;"
-        router="router">
+        router="router"
+        :default-openeds="openMenu">
       <el-menu-item index="1" :route="{path:'/'}">
         <i class="el-icon-location icon"></i>
         <span slot="title">首页</span>
       </el-menu-item>
-      <el-submenu index="2">
+      <el-submenu index="2" >
         <template slot="title">
           <i class="el-icon-user-solid"></i>
           <span>个人中心</span>
@@ -63,7 +65,7 @@ export default {
             <i class="el-icon-user"></i>
             <span slot="title">查看名下患者</span>
           </el-menu-item>
-          <el-menu-item index="3-2">
+          <el-menu-item index="3-2" :route="{path:'/ViewMedicalRecord'}">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">查询病历</span>
           </el-menu-item>
@@ -77,10 +79,6 @@ export default {
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-menu-item index="4">
-        <i class="el-icon-sugar"></i>
-        <span slot="title">药品管理</span>
-      </el-menu-item>
       <el-submenu index="5">
         <template slot="title">
           <i class="el-icon-s-management"></i>
@@ -97,22 +95,22 @@ export default {
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-submenu index="6">
-        <template slot="title">
-          <i class="el-icon-chat-square"></i>
-          <span>公告管理</span>
-        </template>
-        <el-menu-item-group>
-          <el-menu-item index="6-1">
-            <i class="el-icon-notebook-2"></i>
-            <span slot="title">查看公告</span>
-          </el-menu-item>
-          <el-menu-item index="6-2">
-            <i class="el-icon-edit-outline"></i>
-            <span slot="title">管理公告</span>
-          </el-menu-item>
-        </el-menu-item-group>
-      </el-submenu>
+      <!--<el-submenu index="6">-->
+      <!--  <template slot="title">-->
+      <!--    <i class="el-icon-chat-square"></i>-->
+      <!--    <span>公告管理</span>-->
+      <!--  </template>-->
+      <!--  <el-menu-item-group>-->
+      <!--    <el-menu-item index="6-1">-->
+      <!--      <i class="el-icon-notebook-2"></i>-->
+      <!--      <span slot="title">查看公告</span>-->
+      <!--    </el-menu-item>-->
+      <!--    <el-menu-item index="6-2">-->
+      <!--      <i class="el-icon-edit-outline"></i>-->
+      <!--      <span slot="title">管理公告</span>-->
+      <!--    </el-menu-item>-->
+      <!--  </el-menu-item-group>-->
+      <!--</el-submenu>-->
       <el-submenu index="7">
         <template slot="title">
           <i class="el-icon-s-custom"></i>

@@ -23,4 +23,6 @@ public class UploadController {
         Map<String, String> map = Map.of("filePath", filePath);
         return Result.success(map);
     }
+
 }
+

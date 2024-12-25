@@ -14,6 +14,9 @@ public class UploadUtil {
     @Value("${upload.path}")
     public String basePath;
 
+    @Value("${server.port}")
+    public String port;
+
     public String upload(MultipartFile file){
         try {
             // 校验文件大小
@@ -24,13 +27,15 @@ public class UploadUtil {
             // 将文件保存为字节数组
             byte[] fileBytes = file.getBytes();
 
-            String filePath = basePath + UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
+            String newFileName = UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
+
+            String filePath = basePath + newFileName;
 
 
             FileOutputStream outputStream = new FileOutputStream( filePath);
             outputStream.write(fileBytes);
             outputStream.close();
-            return filePath;
+            return "http://localhost:" + port + "/upload/" + newFileName;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
