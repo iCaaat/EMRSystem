@@ -147,6 +147,9 @@
     <select id="getDoctorById" resultType="usc.emrsytem.springboot.entity.Doctor">
         select * from doctor where user_id = #{userId}
     </select>
+    <select id="getAdminById" resultType="usc.emrsytem.springboot.entity.Admin">
+        select * from admin where user_id = #{userId}
+    </select>
 
     <!--==========添加==========-->
     <!--添加用户-->
@@ -257,5 +260,8 @@
     </update>
     <update id="updatePassword">
         update user set password = #{newPassword} where phone_number = #{phoneNumber};
+    </update>
+    <update id="changePassword">
+        update user set password = #{newPassword} where user_id = #{userId};
     </update>
 </mapper>

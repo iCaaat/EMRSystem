@@ -44,69 +44,73 @@ export default {
   },
   methods: {
     submitForm(child) {
-      for(let key in this.form) {
-        if(this.form[key] === '') {
-          if(key === 'email') continue;
-          else {
-            this.$message.error('请填写完整信息');
-            return;
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          for(let key in this.form) {
+            if(this.form[key] === '') {
+              if(key === 'email') continue;
+              else {
+                this.$message.error('请填写完整信息');
+                return;
+              }
+            }
+          }
+          // console.log(child)
+          console.log("receive！")
+          let defaultForm = child;
+          if (this.form.role === 'patient') {
+            defaultForm.user = this.form;
+            console.log(JSON.stringify(defaultForm));
+            request({
+              url: '/user/addPatient',
+              method: 'post',
+              data: defaultForm
+            }).then((res) => {
+              // 输出提交信息
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              });
+              console.log(res)
+            });
+          }
+          if (this.form.role === 'doctor') {
+            defaultForm.user = this.form;
+            console.log(JSON.stringify(defaultForm));
+            request({
+              url: '/user/addDoctor',
+              method: 'post',
+              data: defaultForm
+            }).then((res) => {
+              // 输出提交信息
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              });
+              console.log(res)
+            });
+          }
+          if (this.form.role === 'admin') {
+            defaultForm.user = this.form;
+            console.log(JSON.stringify(defaultForm));
+            request({
+              url: '/user/addAdmin',
+              method: 'post',
+              data: defaultForm
+            }).then((res) => {
+              // 输出提交信息
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              });
+              console.log(res)
+              setTimeout( () => {
+                location.reload();
+              },1000)
+            });
           }
         }
-      }
-      // console.log(child)
-      console.log("receive！")
-      let defaultForm = child;
-      if (this.form.role === 'patient') {
-        defaultForm.user = this.form;
-        console.log(JSON.stringify(defaultForm));
-        request({
-          url: '/user/addPatient',
-          method: 'post',
-          data: defaultForm
-        }).then((res) => {
-          // 输出提交信息
-          this.$message({
-            type: 'success',
-            message: '提交成功!'
-          });
-          console.log(res)
-        });
-      }
-      if (this.form.role === 'doctor') {
-        defaultForm.user = this.form;
-        console.log(JSON.stringify(defaultForm));
-        request({
-          url: '/user/addDoctor',
-          method: 'post',
-          data: defaultForm
-        }).then((res) => {
-          // 输出提交信息
-          this.$message({
-            type: 'success',
-            message: '提交成功!'
-          });
-          console.log(res)
-        });
-      }
-      if (this.form.role === 'admin') {
-        defaultForm.user = this.form;
-        console.log(JSON.stringify(defaultForm));
-        request({
-          url: '/user/addAdmin',
-          method: 'post',
-          data: defaultForm
-        }).then((res) => {
-          // 输出提交信息
-          this.$message({
-            type: 'success',
-            message: '提交成功!'
-          });
-          console.log(res)
-          setTimeout( () => {
-            location.reload();
-          },1000)
-        });
-      }
+      })
     },
     resetForm() {
       for(let key in this.form) {

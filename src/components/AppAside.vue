@@ -49,7 +49,7 @@ export default {
             <i class="el-icon-user"></i>
             <span slot="title">个人中心</span>
           </el-menu-item>
-          <el-menu-item index="2-2">
+          <el-menu-item index="2-2" :route="{path:'/ChangePassword'}">
             <i class="el-icon-key"></i>
             <span slot="title">修改密码</span>
           </el-menu-item>

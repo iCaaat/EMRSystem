@@ -3,6 +3,7 @@ package usc.emrsytem.springboot.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import usc.emrsytem.springboot.common.Result;
+import usc.emrsytem.springboot.controller.request.ChangePasswordRequest;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
 import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
@@ -46,6 +47,11 @@ public class UserController {
     public Result adminList(){
         List<Admin> admin = userService.adminList();
         return Result.success(admin);
+    }
+
+    @GetMapping("/getByUserId")
+    public Result getByUserId(@RequestParam("userId") Integer userId){
+        return Result.success(userService.getByUserId(userId));
     }
 //    @GetMapping("getDoctorById")
 //    public Result getDoctorById(@RequestParam("userId") Integer userId){
@@ -123,6 +129,13 @@ public class UserController {
     // 修改密码
     @PutMapping("/updatePassword")
     public Result password(@RequestBody PasswordRequest request) {
+        userService.changePassword(request);
+        return Result.success();
+    }
+
+    // 个人修改密码
+    @PutMapping("/changePassword")
+    public Result changePassword(@RequestBody ChangePasswordRequest request) {
         userService.changePassword(request);
         return Result.success();
     }

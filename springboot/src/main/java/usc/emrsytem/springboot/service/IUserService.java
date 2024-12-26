@@ -1,6 +1,7 @@
 package usc.emrsytem.springboot.service;
 
 import usc.emrsytem.springboot.controller.dto.LoginDTO;
+import usc.emrsytem.springboot.controller.request.ChangePasswordRequest;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
 import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
@@ -21,6 +22,7 @@ public interface IUserService {
     List<Admin> adminList();// 查询所有管理员
     Doctor getDoctorById(Integer userId);// 根据id查询医生
     Patient getPatientById(Integer userId);// 根据id查询患者
+    Object getByUserId(Integer userId);
 
     // 添加
     int addPatient(Patient patient);
@@ -36,12 +38,10 @@ public interface IUserService {
     int updateAdmin(Admin admin);
     int updateUser(User user);
     void changePassword(PasswordRequest request);
+    int changePassword(ChangePasswordRequest request);
 
     LoginDTO login(LoginRequest loginRequest);
 
     User getById(Integer integer);
-
-
-
 
 }

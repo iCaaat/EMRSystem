@@ -7,7 +7,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import usc.emrsytem.springboot.controller.dto.LoginDTO;
+import usc.emrsytem.springboot.controller.request.ChangePasswordRequest;
 import usc.emrsytem.springboot.controller.request.LoginRequest;
 import usc.emrsytem.springboot.controller.request.PasswordRequest;
 import usc.emrsytem.springboot.controller.request.UserPageRequest;
@@ -87,7 +89,20 @@ public class UserService implements IUserService {
         return userMapper.getPatientById(userId);
     }
 
-
+    @Override
+    public Object getByUserId(Integer userId) {
+        if (userMapper.getUserId(userId) == null) {
+            return new ServiceException("用户不存在");
+        }
+        User user =  userMapper.getUserId(userId);
+        if (user.getRole().equals("patient")) {
+            return userMapper.getPatientById(userId);
+        } else if (user.getRole().equals("doctor")) {
+            return userMapper.getDoctorById(userId);
+        } else {
+            return userMapper.getAdminById(userId);
+        }
+    }
 
 
 //    @Override
@@ -340,6 +355,39 @@ public class UserService implements IUserService {
         if (count <= 0) {
             throw new ServiceException("修改密码失败");
         }
+    }
+
+    @Override
+    public int changePassword(ChangePasswordRequest request) {
+        // 检查新旧密码是否为空
+        if (StringUtils.isEmpty(request.getOldPassword()) || StringUtils.isEmpty(request.getNewPassword())) {
+            throw new ServiceException("密码不能为空");
+        }
+        // 比对新旧密码是否一致
+        if (request.getNewPassword().equals(request.getOldPassword())) {
+            throw new ServiceException("新密码不能与旧密码相同");
+        }
+        // 检查旧密码是否正确
+        Integer userId = request.getUserId();
+        if (userId == null) {
+            throw new ServiceException("无法获取用户，请重试");
+        }
+        if (userMapper.getUserId(userId) == null) {
+            throw new ServiceException("用户不存在");
+        }
+
+        User user = userMapper.getUserId(userId);
+
+        // 验证密码是否匹配
+        boolean isPasswordMatch = PasswordUtil.matches(request.getOldPassword(), user.getPassword());
+        if (!isPasswordMatch) {
+            throw new ServiceException("旧密码不正确");
+        }
+        // 新密码加密
+        String newPassword = PasswordUtil.encode(request.getNewPassword());
+        // 更新用户密码
+        request.setNewPassword(newPassword);
+        return userMapper.changePassword(request);
     }
 
 }

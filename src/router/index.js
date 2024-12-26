@@ -76,6 +76,11 @@ const routes = [
         path: 'ViewMedicalRecord',
         name: 'ViewMedicalRecord',
         component: () => import('@/views/MedicalRecord/ViewMedicalRecord.vue')
+      },
+      {
+        path: 'ChangePassword',
+        name: 'ChangePassword',
+        component: () => import('@/views/person/ChangePassword.vue')
       }
     ]
   },
