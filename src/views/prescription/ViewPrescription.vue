@@ -157,58 +157,104 @@ export default {
 </script>
 
 <template>
-  <div>
-    <h2>查询处方</h2>
+  <div class="prescription-page">
+    <h2 class="page-title">查询处方</h2>
 
     <!-- 搜索表单 -->
-    <div style="margin-bottom: 20px">
-      <el-input style="width: 240px;" placeholder="搜索用药名称" v-model="params.medicationName" ></el-input>
-      <el-input style="width: 240px; margin-left: 5px;" placeholder="搜索备注" v-model="params.remarks"></el-input>
-      <el-select v-model="doctorId" filterable placeholder="搜索开具医生" style="width: 240px; margin-left: 5px;">
+    <div class="search-form">
+      <el-input class="search-input" placeholder="搜索用药名称" v-model="params.medicationName" />
+      <el-input class="search-input" placeholder="搜索备注" v-model="params.remarks" />
+      <el-select v-model="doctorId" filterable placeholder="搜索开具医生" class="search-input">
         <el-option
             v-for="item in doctorOptions"
             :key="item.value"
             :label="item.label"
             :value="item.value"
-            :disabled="item.disabled">
-        </el-option>
+            :disabled="item.disabled"
+        />
       </el-select>
-      <el-button style="margin-left: 5px;" type="primary" @click="listPrescription"><i class="el-icon-search"></i>搜索</el-button>
-      <el-button style="margin-left: 5px;" type="warning" @click="reset"><i class="el-icon-refresh"></i>重置</el-button>
+      <el-button class="search-button" type="primary" @click="listPrescription">
+        <i class="el-icon-search"></i>搜索
+      </el-button>
+      <el-button class="search-button" type="warning" @click="reset">
+        <i class="el-icon-refresh"></i>重置
+      </el-button>
     </div>
 
-    <!--表格-->
-    <el-table :data="prescriptionTable" stripe border>
-      <el-table-column prop='doctorId' label="医生编号" width="80"></el-table-column>
-      <el-table-column prop='doctorName' label="医生姓名" width="80"></el-table-column>
-      <el-table-column prop='medicationName' label="药品名称"></el-table-column>
-      <el-table-column prop='dosage' label="剂量"></el-table-column>
-      <el-table-column prop='frequency' label="用药频率" ></el-table-column>
-      <el-table-column prop='duration' label="持续时间" ></el-table-column>
-      <el-table-column prop='instructions' label="用药说明" ></el-table-column>
-      <el-table-column prop='remarks' label="备注" ></el-table-column>
-      <el-table-column prop='createdAt' label="开具时间" ></el-table-column>
+    <!-- 表格 -->
+    <el-table :data="prescriptionTable" stripe border class="prescription-table">
+      <el-table-column prop="doctorId" label="医生编号" width="80" />
+      <el-table-column prop="doctorName" label="医生姓名" width="80" />
+      <el-table-column prop="medicationName" label="药品名称" />
+      <el-table-column prop="dosage" label="剂量" />
+      <el-table-column prop="frequency" label="用药频率" />
+      <el-table-column prop="duration" label="持续时间" />
+      <el-table-column prop="instructions" label="用药说明" />
+      <el-table-column prop="remarks" label="备注" />
+      <el-table-column prop="createdAt" label="开具时间" />
       <el-table-column label="操作">
         <template v-slot="scoped">
-          <el-link type="danger" style="margin: 2px" @click="deleteUserRequest(scoped.row)">删除处方</el-link>
+          <el-link type="danger" class="action-link" @click="deleteUserRequest(scoped.row)">
+            删除处方
+          </el-link>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页 -->
-    <div style="margin-top: 20px">
+    <div class="pagination-container">
       <el-pagination
           background
           :current-page="params.pageNum"
           :page-size="params.pageSize"
           layout="prev, pager, next"
           @current-change="handleCurrentPageChange"
-          :total="total">
-      </el-pagination>
+          :total="total"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
+.prescription-page {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
 
+.page-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 240px;
+}
+
+.search-button {
+  margin-left: 10px;
+}
+
+.prescription-table {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-link {
+  margin: 0 5px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
 </style>

@@ -1,13 +1,33 @@
 <script>
+import Cookies from "js-cookie";
+
 export default {
   name: 'AppAside',
   data() {
     return {
+      user: Cookies.get('user') ? JSON.parse(Cookies.get('user')) : {},
       isCollapse: false,
       showLeftButton: true, // 默认显示左侧按钮
       thisWidth: 0,
-      openMenu: ['1', '2', '3', '4', '5', '6', '7', '8']
+      openMenu: ['1', '2', '3', '4', '5', '6', '7', '8'],
+      role: {
+        doctor: false,
+        patient: false,
+        admin: false,
+        doctorOrAdmin: false
+      }
     };
+  },
+  created() {
+    if (this.user.role === 'doctor') {
+      this.role.doctor = true
+      this.role.doctorOrAdmin = true
+    } else if (this.user.role === 'patient') {
+      this.role.patient = true
+    } else if (this.user.role === 'admin') {
+      this.role.doctorOrAdmin = true
+      this.role.admin = true
+    }
   },
   methods: {
 
@@ -55,41 +75,41 @@ export default {
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-submenu index="3">
+      <el-submenu index="3" v-if="role.doctorOrAdmin">
         <template slot="title">
           <i class="el-icon-s-management"></i>
           <span>门诊病历管理</span>
         </template>
-        <el-menu-item-group>
-          <el-menu-item index="3-1" :route="{path:'/AssignedPatients'}">
+        <el-menu-item-group >
+          <el-menu-item index="3-1" :route="{path:'/AssignedPatients'}" v-if="role.doctor">
             <i class="el-icon-user"></i>
             <span slot="title">查看名下患者</span>
           </el-menu-item>
-          <el-menu-item index="3-2" :route="{path:'/ViewMedicalRecord'}">
+          <el-menu-item index="3-2" :route="{path:'/ViewMedicalRecord'}" v-if="role.doctorOrAdmin">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">查询病历</span>
           </el-menu-item>
-          <el-menu-item index="3-3" :route="{path: '/AddMedicalRecord'}">
+          <el-menu-item index="3-3" :route="{path: '/AddMedicalRecord'}" v-if="role.doctor">
             <i class="el-icon-plus"></i>
             <span slot="title">新增病历</span>
           </el-menu-item>
-          <el-menu-item index="3-4" :route="{path: '/BindPatientAndDoctor'}">
+          <el-menu-item index="3-4" :route="{path: '/BindPatientAndDoctor'}" v-if="role.doctorOrAdmin">
             <i class="el-icon-edit-outline"></i>
             <span slot="title">注册医生病人关系</span>
           </el-menu-item>
         </el-menu-item-group>
       </el-submenu>
-      <el-submenu index="5">
+      <el-submenu index="5" v-if="role.doctorOrAdmin">
         <template slot="title">
           <i class="el-icon-s-management"></i>
           <span>处方管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="5-1" :route="{path:'/ViewPrescription'}">
+          <el-menu-item index="5-1" :route="{path:'/ViewPrescription'}" v-if="role.doctorOrAdmin">
             <i class="el-icon-user"></i>
             <span slot="title">查询处方</span>
           </el-menu-item>
-          <el-menu-item index="5-2" :route="{path:'/AddPrescription'}">
+          <el-menu-item index="5-2" :route="{path:'/AddPrescription'}" v-if="role.doctor">
             <i class="el-icon-notebook-2"></i>
             <span slot="title">新增处方</span>
           </el-menu-item>
@@ -111,17 +131,17 @@ export default {
       <!--    </el-menu-item>-->
       <!--  </el-menu-item-group>-->
       <!--</el-submenu>-->
-      <el-submenu index="7">
+      <el-submenu index="7" v-if="role.doctorOrAdmin">
         <template slot="title">
           <i class="el-icon-s-custom"></i>
           <span>用户管理</span>
         </template>
         <el-menu-item-group>
-          <el-menu-item index="7-1" :route="{path:'/users'}">
+          <el-menu-item index="7-1" :route="{path:'/users'}" v-if="role.doctorOrAdmin">
             <i class="el-icon-s-custom"></i>
             <span slot="title">查询用户</span>
           </el-menu-item>
-          <el-menu-item index="7-2" :route="{path:'/AddUser'}">
+          <el-menu-item index="7-2" :route="{path:'/AddUser'}" v-if="role.admin">
             <i class="el-icon-document-add"></i>
             <span slot="title">添加用户</span>
           </el-menu-item>

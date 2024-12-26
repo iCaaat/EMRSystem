@@ -255,206 +255,136 @@ export default {
 </script>
 
 <template>
-<div>
-  <h2>查询病历</h2>
+  <div class="medical-record-page">
+    <h2 class="page-title">查询病历</h2>
 
-  <!-- 搜索表单 -->
-  <div style="margin-bottom: 20px">
-    <el-input style="width: 240px;" placeholder="搜索症状" v-model="params.symptoms" ></el-input>
-    <el-input style="width: 240px; margin-left: 5px;" placeholder="搜索诊断" v-model="params.diagnosis"></el-input>
-    <el-select v-model="params.patientId" filterable placeholder="搜索病人" style="width: 240px; margin-left: 5px;">
-      <el-option
-          v-for="item in patientOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-          :disabled="item.disabled">
-      </el-option>
-    </el-select>
-    <el-button style="margin-left: 5px;" type="primary" @click="listMedicalRecord"><i class="el-icon-search"></i>搜索</el-button>
-    <el-button style="margin-left: 5px;" type="warning" @click="reset"><i class="el-icon-refresh"></i>重置</el-button>
+    <!-- 搜索表单 -->
+    <div class="search-form">
+      <el-input class="search-input" placeholder="搜索症状" v-model="params.symptoms" />
+      <el-input class="search-input" placeholder="搜索诊断" v-model="params.diagnosis" />
+      <el-select v-model="params.patientId" filterable placeholder="搜索病人" class="search-input">
+        <el-option
+            v-for="item in patientOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            :disabled="item.disabled"
+        />
+      </el-select>
+      <el-button class="search-button" type="primary" @click="listMedicalRecord">
+        <i class="el-icon-search"></i>搜索
+      </el-button>
+      <el-button class="search-button" type="warning" @click="reset">
+        <i class="el-icon-refresh"></i>重置
+      </el-button>
+    </div>
+
+    <!-- 表格 -->
+    <el-table :data="medicalRecordData" stripe border class="medical-record-table">
+      <el-table-column prop="recordId" label="病历ID" width="70" />
+      <el-table-column prop="patientId" label="患者ID" width="70" />
+      <el-table-column prop="patientName" label="患者姓名" />
+      <el-table-column prop="doctorId" label="医生ID" width="70" />
+      <el-table-column prop="doctorName" label="医生姓名" />
+      <el-table-column prop="diagnosis" label="诊断" />
+      <el-table-column prop="symptoms" label="症状" />
+      <el-table-column prop="remarks" label="备注" />
+      <el-table-column label="操作">
+        <template v-slot="scoped">
+          <el-link type="primary" class="action-link" @click="viewDetail(scoped.row)">查看详情</el-link>
+          <el-link type="warning" class="action-link" @click="edit(scoped.row)">编辑</el-link>
+          <el-link type="danger" class="action-link" @click="deleteRecord(scoped.row)">删除病历</el-link>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- 分页 -->
+    <div class="pagination-container">
+      <el-pagination
+          background
+          :current-page="params.pageNum"
+          :page-size="params.pageSize"
+          layout="prev, pager, next"
+          @current-change="handleCurrentPageChange"
+          :total="total"
+      />
+    </div>
+
+    <!-- 查看详情弹窗 -->
+    <el-dialog :visible.sync="detailVisible" width="80%" class="detail-dialog">
+      <el-descriptions title="病历详情" class="margin-top">
+        <el-descriptions-item label="患者姓名">{{ selectedRow?.patientName }}</el-descriptions-item>
+        <el-descriptions-item label="主治医生">{{ selectedRow?.doctorName }}</el-descriptions-item>
+        <el-descriptions-item label="备注">{{ selectedRow?.remarks }}</el-descriptions-item>
+        <el-descriptions-item label="诊断信息">{{ selectedRow?.diagnosis }}</el-descriptions-item>
+        <el-descriptions-item label="症状">{{ selectedRow?.symptoms }}</el-descriptions-item>
+        <el-descriptions-item label="处方">{{ selectedRow?.prescription }}</el-descriptions-item>
+        <el-descriptions-item label="图像" v-if="selectedRow?.existChart">
+          <el-link @click="viewImage">查看<i class="el-icon-view el-icon--right"></i></el-link>
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
+
+    <!-- 编辑弹窗 -->
+    <el-dialog :visible.sync="editVisible" width="60%" title="编辑病历" class="edit-dialog">
+      <el-form ref="form" :model="editForm">
+        <!-- 表单项... -->
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">提交</el-button>
+          <el-button @click="editVisible = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
-
-  <el-table
-      :data="medicalRecordData"
-      stripe
-      style="width: 100%">
-    <el-table-column
-        prop="recordId"
-        label="病历ID"
-        width="70">
-    </el-table-column>
-    <el-table-column
-        prop="patientId"
-        label="患者ID"
-        width="70">
-    </el-table-column>
-    <el-table-column
-        prop="patientName"
-        label="患者姓名">
-    </el-table-column>
-    <el-table-column
-        prop="doctorId"
-        label="医生ID"
-        width="70">
-    </el-table-column>
-    <el-table-column
-        prop="doctorName"
-        label="医生姓名">
-    </el-table-column>
-    <el-table-column
-        prop="diagnosis"
-        label="诊断">
-    </el-table-column>
-    <el-table-column
-        prop="symptoms"
-        label="症状">
-    </el-table-column>
-    <el-table-column
-        prop="remarks"
-        label="备注">
-    </el-table-column>
-    <el-table-column label="操作">
-      <template v-slot="scoped">
-        <el-link type="primary" @click="viewDetail(scoped.row)">查看详情</el-link>
-        <el-link type="warning" @click="edit(scoped.row)">编辑</el-link>
-        <el-link type="danger" @click="deleteRecord(scoped.row)">删除病历</el-link>
-      </template>
-    </el-table-column>
-  </el-table>
-
-  <!-- 分页 -->
-  <div style="margin-top: 20px">
-    <el-pagination
-        background
-        :current-page="params.pageNum"
-        :page-size="params.pageSize"
-        layout="prev, pager, next"
-        @current-change="handleCurrentPageChange"
-        :total="total">
-    </el-pagination>
-  </div>
-
-  <!-- 查看详情弹窗 -->
-  <el-dialog
-      :visible.sync="detailVisible"
-      width="80%">
-    <el-descriptions title="用户信息" class="margin-top">
-      <el-descriptions-item label="患者姓名">{{ selectedRow?.patientName }}</el-descriptions-item>
-      <el-descriptions-item label="主治医生">{{ selectedRow?.doctorName }}</el-descriptions-item>
-      <el-descriptions-item label="备注">{{ selectedRow?.remarks }}</el-descriptions-item>
-      <el-descriptions-item label="诊断信息">{{ selectedRow?.diagnosis }}</el-descriptions-item>
-      <el-descriptions-item label="症状">{{ selectedRow?.symptoms}}</el-descriptions-item>
-      <el-descriptions-item label="处方">{{ selectedRow?.prescription}}</el-descriptions-item>
-      <el-descriptions-item label="开药处方" v-if="this.selectedRow?.existPrescription">
-        <el-table
-            :data="selectedPrescription"
-            style="width: 100%">
-          <el-table-column
-              prop="medicationName"
-              label="药品名称">
-          </el-table-column>
-          <el-table-column
-              prop="dosage"
-              label="剂量">
-          </el-table-column>
-          <el-table-column
-              prop="duration"
-              label="持续时间">
-          </el-table-column>
-          <el-table-column
-              prop="frequency"
-              label="用药频率">
-          </el-table-column>
-          <el-table-column
-              prop="instructions"
-              label="用药说明">
-          </el-table-column>
-        </el-table>
-      </el-descriptions-item>
-      <el-descriptions-item label="图像" v-if="selectedRow?.existChart">
-        <el-link @click="viewImage">查看<i class="el-icon-view el-icon--right"></i> </el-link>
-
-        <!-- 图片查看弹窗 -->
-        <el-dialog title="查看图片" :visible.sync="imageDialogVisible" width="50%" append-to-body>
-          <img :src="selectedRow?.chart" alt="详细图片" style="width: 100%;" />
-        </el-dialog>
-      </el-descriptions-item>
-    </el-descriptions>
-  </el-dialog>
-
-  <!--编辑弹窗-->
-  <el-dialog :visible.sync="editVisible" width="60%" title="编辑">
-    <el-form ref="form" :model="editForm">
-      <el-form-item label="患者姓名">
-        <el-input placeholder="请输入内容" v-model="editForm.patientName" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="患者Id">
-        <el-input placeholder="请输入内容" v-model="editForm.patientId" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="医生姓名">
-        <el-input placeholder="请输入内容" v-model="editForm.doctorName" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="医生Id">
-        <el-input placeholder="请输入内容" v-model="editForm.doctorId" disabled></el-input>
-      </el-form-item>
-      <el-form-item label="诊断信息">
-        <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-            v-model="editForm.diagnosis">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="症状">
-        <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-            v-model="editForm.symptoms">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="处方">
-        <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-            v-model="editForm.prescription">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="备注">
-        <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-            v-model="editForm.remarks">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="从表选择">
-        <el-radio-group v-model="selectFromTable" @change="handleChange">
-          <el-radio :label="false">否</el-radio>
-          <el-radio :label="true">是</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="选择处方" v-if="selectFromTable">
-        <el-select v-model="editForm.prescriptionId" filterable placeholder="请选择" style="width: 100%;">
-          <el-option
-              v-for="item in prescriptionOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">提交</el-button>
-        <el-button @click="editVisible = false">取消</el-button>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
-</div>
 </template>
 
 <style scoped>
+.medical-record-page {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
 
+.page-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 240px;
+}
+
+.search-button {
+  margin-left: 10px;
+}
+
+.medical-record-table {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-link {
+  margin: 0 5px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.detail-dialog,
+.edit-dialog {
+  .el-dialog__body {
+    padding: 20px;
+  }
+}
 </style>

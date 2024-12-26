@@ -507,251 +507,130 @@ export default {
 </script>
 
 <template>
-<div>
-  <!-- 搜索表单 -->
-  <div style="margin-bottom: 20px">
-    <el-input style="width: 240px;" placeholder="输入名称" v-model="params.username" ></el-input>
-    <el-input style="width: 240px; margin-left: 5px;" placeholder="请输入电话" v-model="params.phoneNumber"></el-input>
-    <el-input style="width: 240px; margin-left: 5px;" placeholder="请输入邮件" v-model="params.email"></el-input>
-    <el-select v-model="params.role" placeholder="筛选角色" style="width: 240px; margin-left: 5px;">
-      <el-option
-          v-for="item in roleOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-          :disabled="item.disabled">
-      </el-option>
-    </el-select>
-    <el-button style="margin-left: 5px;" type="primary" @click="load"><i class="el-icon-search"></i>搜索</el-button>
-    <el-button style="margin-left: 5px;" type="warning" @click="reset"><i class="el-icon-refresh"></i>重置</el-button>
+  <div class="user-management-page">
+    <!-- 搜索表单 -->
+    <el-card class="search-card" shadow="hover">
+      <div class="search-form">
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <el-input placeholder="输入名称" v-model="params.username" class="search-input" />
+          </el-col>
+          <el-col :span="6">
+            <el-input placeholder="请输入电话" v-model="params.phoneNumber" class="search-input" />
+          </el-col>
+          <el-col :span="6">
+            <el-input placeholder="请输入邮件" v-model="params.email" class="search-input" />
+          </el-col>
+          <el-col :span="6">
+            <el-select v-model="params.role" placeholder="筛选角色" class="search-input">
+              <el-option
+                  v-for="item in roleOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                  :disabled="item.disabled"
+              />
+            </el-select>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" class="search-actions">
+          <el-col :span="6">
+            <el-button type="primary" block @click="load">
+              <i class="el-icon-search"></i> 搜索
+            </el-button>
+          </el-col>
+          <el-col :span="6">
+            <el-button type="warning" block @click="reset">
+              <i class="el-icon-refresh"></i> 重置
+            </el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </el-card>
+
+    <!-- 数据表格 -->
+    <el-card class="table-card" shadow="hover">
+      <el-table :data="tableData" stripe border highlight-current-row>
+        <el-table-column type="index" label="#" width="50" align="center" />
+        <el-table-column prop="userId" label="ID" width="100" />
+        <el-table-column prop="username" label="姓名" width="120" />
+        <el-table-column prop="role" label="角色" width="80" />
+        <el-table-column prop="email" label="邮箱" />
+        <el-table-column prop="phoneNumber" label="电话" />
+        <el-table-column prop="createdAt" label="创建时间" />
+        <el-table-column prop="lastLoginAt" label="最后登录时间" />
+        <el-table-column label="操作" width="200">
+          <template #default="scoped">
+            <el-link type="primary" @click="viewDetails(scoped.row)">详细</el-link>
+            <el-link type="warning" @click="viewUpdateForm(scoped.row)">修改</el-link>
+            <el-link type="danger" @click="deleteUserRequest(scoped.row)">删除</el-link>
+            <el-link type="info" @click="viewChangePasswordForm(scoped.row)">修改密码</el-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="100">
+          <template #default="scoped">
+            <el-switch
+                v-model="scoped.row.status"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                @change="changeStatus(scoped.row)"
+            />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+
+    <!-- 分页 -->
+    <div class="pagination-container">
+      <el-pagination
+          background
+          :current-page="params.pageNum"
+          :page-size="params.pageSize"
+          layout="prev, pager, next, total"
+          @current-change="handleCurrentPageChange"
+          :total="total"
+      />
+    </div>
   </div>
-
-  <!-- 表格 -->
-  <el-table :data="tableData" stripe border>
-    <el-table-column
-        type="index"
-        width="50">
-    </el-table-column>
-    <el-table-column prop='userId' label="id" width="100"></el-table-column>
-    <el-table-column prop='username' label="姓名" width="100"></el-table-column>
-    <el-table-column prop='role' label="角色" width="80"></el-table-column>
-    <el-table-column prop='email' label="邮箱" ></el-table-column>
-    <el-table-column prop='phoneNumber' label="电话" ></el-table-column>
-    <el-table-column prop='createdAt' label="创建于" ></el-table-column>
-    <el-table-column prop='lastLoginAt' label="最后登录于" ></el-table-column>
-    <el-table-column label="操作">
-      <template v-slot="scoped">
-        <el-link type="primary" style="margin: 2px" @click="viewDetails(scoped.row)">详细</el-link>
-        <el-link type="warning" style="margin: 2px" @click="viewUpdateForm(scoped.row)">修改</el-link>
-        <el-link type="danger" style="margin: 2px" @click="deleteUserRequest(scoped.row)">删除</el-link>
-        <el-link type="warning" style="margin: 2px" @click="viewChangePasswordForm(scoped.row)">修改密码</el-link>
-      </template>
-    </el-table-column>
-    <el-table-column label="状态" width="70">
-      <template v-slot="scoped">
-        <el-switch
-            v-model="scoped.row.status"
-            @change="changeStatus(scoped.row)"
-            active-color="#13ce66"
-            inactive-color="#ff4949">
-        </el-switch>
-      </template>
-    </el-table-column>
-  </el-table>
-
-  <!-- 分页 -->
-  <div style="margin-top: 20px">
-    <el-pagination
-        background
-        :current-page="params.pageNum"
-        :page-size="params.pageSize"
-        layout="prev, pager, next"
-        @current-change="handleCurrentPageChange"
-        :total="total">
-    </el-pagination>
-  </div>
-
-  <!--查看详细-->
-  <el-dialog title="详细信息" :visible.sync="dialogTableVisible" width="60%">
-      <el-descriptions title="用户信息" direction="vertical" :column="4" border v-if="patientDetailBool">
-        <el-descriptions-item label="姓名">{{ selectedUser?.user.username || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="性别">{{ selectedUser?.gender || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="角色">{{ selectedUser?.user.role || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="出生日期">{{ selectedUser?.dateOfBirth || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="电话">{{ selectedUser?.user.phoneNumber || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="邮件">{{ selectedUser?.user.email || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="地址">{{ selectedUser?.address || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="紧急联系人">{{ selectedUser?.emergencyContact || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="紧急联系电话">{{ selectedUser?.contactPhone || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ selectedUser?.user.createdAt || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="最后登录时间">{{ selectedUser?.user.lastLoginAt || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="用药历史">{{ selectedUser?.medicalHistory || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="过敏反应">{{ selectedUser?.allergies || '未知' }}</el-descriptions-item>
-      </el-descriptions>
-      <el-descriptions title="用户信息" direction="vertical" :column="4" border v-if="doctorDetailBool">
-        <el-descriptions-item label="姓名">{{ selectedUser?.user.username || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="性别">{{ selectedUser?.gender || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="角色">{{ selectedUser?.user.role || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="电话">{{ selectedUser?.user.phoneNumber || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="邮件">{{ selectedUser?.user.email || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="部门">{{ selectedUser?.department || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="从业年限">{{ selectedUser?.experienceYears || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="专长">{{ selectedUser?.specialty || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="资格证书">{{ selectedUser?.qualification || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ selectedUser?.user.createdAt || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="最后登录时间">{{ selectedUser?.user.lastLoginAt || '未知' }}</el-descriptions-item>
-
-      </el-descriptions>
-      <el-descriptions title="用户信息" direction="vertical" :column="3" border v-if="adminDetailBool">
-        <el-descriptions-item label="姓名">{{ selectedUser?.user.username || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="角色">{{ selectedUser?.adminLevel || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="电话">{{ selectedUser?.user.phoneNumber || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="邮件">{{ selectedUser?.user.email || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="部门">{{ selectedUser?.department || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ selectedUser?.user.createdAt || '未知' }}</el-descriptions-item>
-        <el-descriptions-item label="最后登录时间">{{ selectedUser?.user.lastLoginAt || '未知' }}</el-descriptions-item>
-
-      </el-descriptions>
-  </el-dialog>
-
-  <!-- 修改界面 -->
-  <el-dialog title="修改用户" :visible.sync="updateDialogFormVisible" width="60%" >
-    <el-form label-width="100px" ref="updateForm" :model="tempData" v-if="patientDetailForm" :rules="updateRules">
-      <el-form-item label="姓名" prop="user.username">
-        <el-input v-model="tempData.user.username"></el-input>
-      </el-form-item>
-      <!--<el-form-item label="密码" prop="password">-->
-      <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
-      <!--</el-form-item>-->
-      <el-form-item label="邮件" prop="user.email">
-        <el-input v-model="tempData.user.email"></el-input>
-      </el-form-item>
-      <el-form-item label="电话" prop="user.phoneNumber">
-        <el-input v-model="tempData.user.phoneNumber"></el-input>
-      </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-radio v-model="tempData.gender" label="male">男</el-radio>
-        <el-radio v-model="tempData.gender" label="female">女</el-radio>
-      </el-form-item>
-      <el-form-item label="出生日期" prop="dateOfBirth">
-          <el-date-picker
-              v-model="tempData.dateOfBirth"
-              type="month"
-              placeholder="选择月">
-          </el-date-picker>
-      </el-form-item>
-      <el-form-item label="地址">
-        <el-input v-model="tempData.address"></el-input>
-      </el-form-item>
-      <el-form-item label="紧急联系人">
-        <el-input v-model="tempData.emergencyContact"></el-input>
-      </el-form-item>
-      <el-form-item label="紧急联系电话">
-        <el-input v-model="tempData.contactPhone"></el-input>
-      </el-form-item>
-      <el-form-item label="用药历史">
-        <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-            v-model="tempData.medicalHistory">
-        </el-input>
-      </el-form-item>
-      <el-form-item label="过敏反应">
-        <el-input
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-            v-model="tempData.allergies">
-        </el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="updateUserRequest">提交</el-button>
-        <el-button @click="updateDialogFormVisible = false">取消</el-button>
-      </el-form-item>
-    </el-form>
-    <el-form label-width="100px" ref="updateForm" :model="tempData" v-if="doctorDetailForm" :rules="updateRules">
-      <el-form-item label="姓名" prop="user.username">
-        <el-input v-model="tempData.user.username"></el-input>
-      </el-form-item>
-      <!--<el-form-item label="密码" prop="password">-->
-      <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
-      <!--</el-form-item>-->
-      <el-form-item label="邮件" prop="user.email">
-        <el-input v-model="tempData.user.email"></el-input>
-      </el-form-item>
-      <el-form-item label="电话" prop="user.phoneNumber">
-        <el-input v-model="tempData.user.phoneNumber"></el-input>
-      </el-form-item>
-      <el-form-item label="性别" prop="gender">
-        <el-radio v-model="tempData.gender" label="male">男</el-radio>
-        <el-radio v-model="tempData.gender" label="female">女</el-radio>
-      </el-form-item>
-      <el-form-item label="部门" prop="department">
-        <el-input v-model="tempData.department"></el-input>
-      </el-form-item>
-      <el-form-item label="专长" prop="specialty">
-        <el-input v-model="tempData.specialty"></el-input>
-      </el-form-item>
-      <el-form-item label="工作年限" prop="experienceYears">
-        <el-input-number v-model="tempData.experienceYears" :min="0" :max="70" label="工作年限"></el-input-number>
-      </el-form-item>
-      <el-form-item label="资格证书">
-        <el-input v-model="tempData.qualification"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="updateUserRequest">提交</el-button>
-        <el-button @click="updateDialogFormVisible = false">取消</el-button>
-      </el-form-item>
-    </el-form>
-    <el-form label-width="100px" ref="updateForm" :model="tempData" v-if="adminDetailForm" :rules="updateRules">
-      <el-form-item label="姓名" prop="user.username">
-        <el-input v-model="tempData.user.username"></el-input>
-      </el-form-item>
-      <!--<el-form-item label="密码" prop="password">-->
-      <!--  <el-input v-model="tempData?.user.password" show-password></el-input>-->
-      <!--</el-form-item>-->
-      <el-form-item label="邮件" prop="user.email">
-        <el-input v-model="tempData.user.email"></el-input>
-      </el-form-item>
-      <el-form-item label="电话" prop="user.phoneNumber">
-        <el-input v-model="tempData.user.phoneNumber"></el-input>
-      </el-form-item>
-      <el-form-item label="管理等级" prop="adminLevel">
-        <el-select v-model="tempData.adminLevel" placeholder="请选择">
-          <el-option
-              v-for="item in adminLevelOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="部门" prop="department">
-        <el-input v-model="tempData.department"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="updateUserRequest">提交</el-button>
-        <el-button @click="updateDialogFormVisible = false">取消</el-button>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
-
-  <!--修改密码界面-->
-  <el-dialog title="修改密码" :visible.sync="changePassDialogFormVisible" width="30%" >
-    <el-form label-width="100px" ref="changePassForm" :model="changePassForm" :rules="updateRules">
-      <el-form-item label="新密码" prop="newPassword">
-        <el-input v-model="changePassForm.newPassword" autocomplete="off" show-password></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="changePassRequest">提交</el-button>
-        <el-button @click="changePassDialogFormVisible = false">取消</el-button>
-      </el-form-item>
-    </el-form>
-  </el-dialog>
-</div>
 </template>
 
 <style scoped>
+.user-management-page {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
 
+.search-card,
+.table-card {
+  margin-bottom: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form {
+  padding: 10px;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.search-actions {
+  margin-top: 10px;
+}
+
+.table-card .el-table {
+  border-radius: 8px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.action-link {
+  margin-right: 10px;
+  cursor: pointer;
+}
 </style>
