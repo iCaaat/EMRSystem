@@ -7,15 +7,21 @@ export default {
   data() {
     return {
       stats: {
-        totalPatients: 2000,
-        totalMedicalRecords: 5000,
-        totalPrescriptions: 3500,
-        totalDoctors: 150
+        totalPatients: 1,
+        totalMedicalRecords: 1,
+        totalPrescriptions: 1,
+        // totalDoctors: 1,
+        totalUsers: 1,
       },
       chartData: {
         labels: ['病历', '处方', '医生', '患者'],
         values: [5000, 3500, 150, 2000]
-      }
+      },
+      prescriptionData: [],
+      patientData: [],
+      medicalRecordData: [],
+      userData: [],
+      total: 0,
     };
   },
   methods: {
@@ -66,8 +72,8 @@ export default {
       }).then(res => {
         if (res.code === '200') {
           this.prescriptionData = res.data.list
+          this.$set(this.stats, "totalPrescriptions", this.prescriptionData.length)
           // console.log(this.prescriptionData)
-          this.generateOptions(this.prescriptionData, 'prescription')
         } else {
           this.$message.error(res.msg)
         }
@@ -79,21 +85,8 @@ export default {
         // console.log(res)
         if (res.code === '200') {
           this.patientData = res.data.list
-          // console.log(this.patientData)
-          this.generatePatientOptions()
-          try {
-            for (let i = 0; i < this.medicalRecordData.length; i++) {
-              for (let j = 0; j < this.patientData.length; j++) {
-                if (this.medicalRecordData[i].patientId === this.patientData[j].patientId) {
-                  // this.medicalRecordData[i].patientName = this.patientData[j].user.username
-                  this.$set(this.medicalRecordData[i], 'patientName', this.patientData[j].user.username)
-                }
-              }
-            }
-            // console.log(this.medicalRecordData)
-          } catch (e) {
-            this.$message.error(e)
-          }
+          this.$set(this.stats, "totalPatients", this.patientData.length)
+          console.log(this.patientData)
         }
 
       })
@@ -107,8 +100,7 @@ export default {
       }).then(res => {
         if (res.code === '200') {
           this.medicalRecordData = res.data.list
-          this.loadPatients()
-          this.loadDoctors()
+          this.$set(this.stats, "totalMedicalRecords", this.medicalRecordData.length)
           // console.log(this.medicalRecordData)
         } else {
           this.$message.error(res.msg)
@@ -119,15 +111,20 @@ export default {
       request.get('/user/page', {params: this.params}).then(res => {
         // console.log("res:" + JSON.stringify(res, null, 2))
         if (res.code === '200') {
-          this.tableData = res.data.list
+          this.userData = res.data.list
           this.total = res.data.total
-          // console.log(JSON.stringify(this.tableData))
+          this.$set(this.stats, "totalUsers", this.userData.length)
+          // console.log(this.userData)
         }
       })
     },
   },
   mounted() {
     this.initChart();
+    this.load();
+    this.listPrescription();
+    this.listMedicalRecord();
+    this.loadPatients();
   }
 };
 </script>
@@ -135,51 +132,91 @@ export default {
 <template>
   <div class="home-page">
     <!-- 快速入口 -->
-    <el-row gutter="20" class="quick-links">
-      <el-col :span="6">
-        <el-card shadow="hover" @click="navigateTo('/medical-records')">
-          病历管理
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover" @click="navigateTo('/prescriptions')">
-          处方管理
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card shadow="hover" @click="navigateTo('/users')">
-          用户管理
-        </el-card>
-      </el-col>
-    </el-row>
+    <div class="quick-access">
+      <el-row>
+        <el-col :span="8">
+          <el-tag
+              type="success"
+              size="large"
+              class="quick-tag"
+              @click="goToPage('/medical-records')"
+          >
+            病历管理
+          </el-tag>
+        </el-col>
+        <el-col :span="8">
+          <el-tag
+              type="info"
+              size="large"
+              class="quick-tag"
+              @click="goToPage('/prescriptions')"
+          >
+            处方管理
+          </el-tag>
+        </el-col>
+        <el-col :span="8">
+          <el-tag
+              type="warning"
+              size="large"
+              class="quick-tag"
+              @click="goToPage('/user-management')"
+          >
+            用户管理
+          </el-tag>
+        </el-col>
+      </el-row>
+    </div>
 
     <!-- 数据统计条 -->
-    <el-row gutter="20" class="stats-bar">
-      <el-col :span="6">
-        <el-card>
-          <h3>总病人数</h3>
-          <p>{{ stats.totalPatients }}</p>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card>
-          <h3>总病历数</h3>
-          <p>{{ stats.totalMedicalRecords }}</p>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card>
-          <h3>总处方数</h3>
-          <p>{{ stats.totalPrescriptions }}</p>
-        </el-card>
-      </el-col>
-      <el-col :span="6">
-        <el-card>
-          <h3>总医生数</h3>
-          <p>{{ stats.totalDoctors }}</p>
-        </el-card>
-      </el-col>
-    </el-row>
+    <div>
+      <el-row :gutter="20">
+        <el-col :span="6">
+          <div>
+            <el-statistic
+                group-separator=","
+                :value="stats.totalUsers"
+                title="总用户数"
+            >
+              <template slot="suffix">
+                <i class="el-icon-user"></i>
+              </template>
+            </el-statistic>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div>
+            <el-statistic title="总患者数" :value="stats.totalPatients">
+              <template slot="suffix">
+                <i class="el-icon-user-solid"></i>
+              </template>
+            </el-statistic>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div>
+            <el-statistic
+                group-separator=","
+                decimal-separator="."
+                :value="stats.totalMedicalRecords"
+                title="总病历数"
+            >
+              <template slot="suffix">
+                <i class="el-icon-tickets" style="color: yellow"></i>
+              </template>
+            </el-statistic>
+          </div>
+        </el-col>
+        <el-col :span="6">
+          <div>
+            <el-statistic :value="stats.totalPrescriptions" title="总处方数">
+              <template slot="suffix">
+                <i class="el-icon-edit" style="color: #53a8ff"></i>
+              </template>
+            </el-statistic>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
 
     <!-- ECharts 图表 -->
     <div class="chart-container">

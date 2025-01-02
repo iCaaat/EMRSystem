@@ -55,7 +55,7 @@ export default {
         style="flex: 0 0 auto;"
         router="router"
         :default-openeds="openMenu">
-      <el-menu-item index="1" :route="{path:'/'}">
+      <el-menu-item index="1" :route="{path:'/'}" v-if="false">
         <i class="el-icon-location icon"></i>
         <span slot="title">首页</span>
       </el-menu-item>

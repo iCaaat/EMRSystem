@@ -20,7 +20,7 @@ const routes = [
     path: '/',
     name: 'h',
     component: AppContainer,
-    redirect: '/home',
+    redirect: '/PersonalCenter',
     children: [
       {
         path: 'home',
