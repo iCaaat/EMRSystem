@@ -15,6 +15,12 @@ export default {
       selectedUser: [],//选中的用户
       detailDialogVisible: false,//详情对话框
       total: 0,
+      selectedPrescription: null,
+      selectedRow: null,
+      prescriptionData: [],
+      detailVisible: false,
+      imageDialogVisible: false,
+      medicalRecordData: null,
       params: {
         username: '',
         phoneNumber: '',
@@ -28,7 +34,8 @@ export default {
   created() {
     this.load()
     this.loadPatients()
-
+    this.listMedicalRecord()
+    this.listPrescription()
   },
   methods: {
     load() {
@@ -45,7 +52,6 @@ export default {
     // 获取患者信息
     loadPatients() {
       request.get('/user/patient', {params: this.params}).then(res => {
-        console.log(res)
         if (res.code === '200') {
           this.patientData = res.data.list
           this.loadRelation()
@@ -83,9 +89,61 @@ export default {
         // console.log(this.assignedPatientsData)
       })
     },
+
+    listMedicalRecord() {
+      // console.log(this.params)
+      request({
+        url: '/medicalRecord/list',
+        method: 'get',
+        params: this.params
+      }).then(res => {
+        if (res.code === '200') {
+          this.medicalRecordData = res.data.list
+          this.loadPatients()
+          // console.log(this.medicalRecordData)
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
+    listPrescription() {
+      // console.log(this.params)
+      request({
+        url: '/prescription/list',
+        method: 'get',
+        params: this.params
+      }).then(res => {
+        if (res.code === '200') {
+          this.prescriptionData = res.data.list
+          // console.log(this.prescriptionData)
+        } else {
+          this.$message.error(res.msg)
+        }
+      })
+    },
     // 查看病历
     viewMedicalRecord(row) {
-
+      this.selectedPrescription = []
+      this.selectedRow = row
+      // console.log(this.selectedRow)
+      if (this.selectedRow.chart === '' || this.selectedRow.chart === null) {
+        this.$set(this.selectedRow, 'existChart', false)
+      } else {
+        this.$set(this.selectedRow, 'existChart', true)
+      }
+      for (let i = 0; i < this.prescriptionData.length; i++) {
+        if (this.prescriptionData[i].prescriptionId === this.selectedRow.prescriptionId) {
+          this.selectedPrescription.push(this.prescriptionData[i])
+          break
+        }
+      }
+      // console.log(this.selectedPrescription)
+      if (this.selectedPrescription.length === 0) {
+        this.$set(this.selectedRow, 'existPrescription', false)
+      } else {
+        this.$set(this.selectedRow, 'existPrescription', true)
+      }
+      this.detailVisible = true
     },
     // 删除角色请求
     deleteUserRequest(rowUser) {
@@ -151,11 +209,17 @@ export default {
         pageNum: 1
       }
       this.load()
+      this.loadPatients()
     },
     // 处理分页
     handleCurrentPageChange(pageNum) {
       this.params.pageNum = pageNum
       this.loadPatients()
+    },
+
+    // 查看图片
+    viewImage() {
+      this.imageDialogVisible = true; // 打开
     },
   }
 }
@@ -191,7 +255,7 @@ export default {
     <el-table-column prop='contactPhone' label="紧急联系电话" ></el-table-column>
     <el-table-column label="操作">
       <template v-slot="scoped">
-        <el-link type="primary" style="margin: 2px" @click="viewMedicalRecord(scoped.row)">查看病历</el-link>
+<!--        <el-link type="primary" style="margin: 2px" @click="viewMedicalRecord(scoped.row)">查看病历</el-link>-->
         <el-link type="danger" style="margin: 2px" @click="deleteUserRequest(scoped.row)">从名下删除</el-link>
       </template>
     </el-table-column>
@@ -209,6 +273,20 @@ export default {
         :total="total">
     </el-pagination>
   </div>
+  <!-- 查看详情弹窗 -->
+  <el-dialog :visible.sync="detailVisible" width="80%" class="detail-dialog">
+    <el-descriptions title="病历详情" class="margin-top">
+      <el-descriptions-item label="患者姓名">{{ selectedRow?.patientName }}</el-descriptions-item>
+      <el-descriptions-item label="主治医生">{{ selectedRow?.doctorName }}</el-descriptions-item>
+      <el-descriptions-item label="备注">{{ selectedRow?.remarks }}</el-descriptions-item>
+      <el-descriptions-item label="诊断信息">{{ selectedRow?.diagnosis }}</el-descriptions-item>
+      <el-descriptions-item label="症状">{{ selectedRow?.symptoms }}</el-descriptions-item>
+      <el-descriptions-item label="处方">{{ selectedRow?.prescription }}</el-descriptions-item>
+      <el-descriptions-item label="图像" v-if="selectedRow?.existChart">
+        <el-link @click="viewImage">查看<i class="el-icon-view el-icon--right"></i></el-link>
+      </el-descriptions-item>
+    </el-descriptions>
+  </el-dialog>
 </div>
 </template>
 

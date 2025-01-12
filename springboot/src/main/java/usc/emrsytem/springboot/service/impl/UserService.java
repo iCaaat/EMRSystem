@@ -220,7 +220,8 @@ public class UserService implements IUserService {
         // 判断手机号是否存在
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setPhoneNumber(user.getPhoneNumber());
-        if (userMapper.getByPhone(loginRequest) != null) {
+        User u = userMapper.getByPhone(loginRequest);
+        if (userMapper.getByPhone(loginRequest) != null && !Objects.equals(u.getUserId(), user.getUserId())) {
             throw new ServiceException("手机号已存在");
         }
 
@@ -252,7 +253,8 @@ public class UserService implements IUserService {
         // 判断手机号是否存在
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setPhoneNumber(user.getPhoneNumber());
-        if (userMapper.getByPhone(loginRequest) != null) {
+        User u = userMapper.getByPhone(loginRequest);
+        if (userMapper.getByPhone(loginRequest) != null && !Objects.equals(u.getUserId(), user.getUserId())) {
             throw new ServiceException("手机号已存在");
         }
 
@@ -285,7 +287,8 @@ public class UserService implements IUserService {
         // 判断手机号是否存在
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setPhoneNumber(user.getPhoneNumber());
-        if (userMapper.getByPhone(loginRequest) != null) {
+        User u = userMapper.getByPhone(loginRequest);
+        if (u != null && !Objects.equals(u.getUserId(), user.getUserId())) {
             throw new ServiceException("手机号已存在");
         }
 

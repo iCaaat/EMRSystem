@@ -125,6 +125,11 @@ export default {
             this.$message.error(res.msg)
           }
         })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     // 获取患者信息
@@ -292,7 +297,7 @@ export default {
       <el-table-column label="操作">
         <template v-slot="scoped">
           <el-link type="primary" class="action-link" @click="viewDetail(scoped.row)">查看详情</el-link>
-          <el-link type="warning" class="action-link" @click="edit(scoped.row)">编辑</el-link>
+<!--          <el-link type="warning" class="action-link" @click="edit(scoped.row)">编辑</el-link>-->
           <el-link type="danger" class="action-link" @click="deleteRecord(scoped.row)">删除病历</el-link>
         </template>
       </el-table-column>
